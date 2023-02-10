@@ -1,0 +1,13 @@
+*.exe
+*.log
+.DS_Store
+*~
+*.tgz
+dist/
+build/
+doc/
+node_modules/
+nbproject/private/
+build/temp
+examples/node_modules
+.idea

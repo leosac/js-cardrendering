@@ -1,0 +1,6 @@
+build/temp
+dist/
+test/
+doc/
+node_modules/
+*~

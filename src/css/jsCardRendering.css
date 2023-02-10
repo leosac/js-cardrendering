@@ -1,0 +1,23 @@
+@media (min-width: 768px){
+	.modal-dialog {
+	  width: 600px;
+	  max-width: 600px;
+	}
+}
+
+.draggableField {
+	cursor : grab;
+}
+
+.draggableFieldAddRecto, .draggableFieldAddVerso {
+	cursor : pointer;
+	color : rgb(40, 167, 69)
+}
+
+.has-error > input , .has-error > span, .has-error > div > input {
+	border-color: orangered;
+}
+
+.carddesign {
+  text-align: center;
+}
