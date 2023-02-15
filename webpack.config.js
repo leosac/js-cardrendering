@@ -9,7 +9,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /src\/i18n\/.json/,
+        test: /src\/locales\/*\/.json/,
         loader: "@alienfast/i18next-loader",
       }
     ],

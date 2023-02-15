@@ -1,3 +1,8 @@
+/**
+ * @copyright Copyright (c) 2023, Leosac SAS - www.leosac.com
+ *
+ * @license GNU LGPL version 3
+ **/
 function pixelToUnit(pixel)
 {
     if (this.state.cardwidth_unit === this.state.cardwidth)

@@ -1,3 +1,0 @@
-import {
-    editBackground
-} from './card';

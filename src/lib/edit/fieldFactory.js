@@ -1,12 +1,8 @@
 /**
- * This page contains code to instanciate fields.
+ * @copyright Copyright (c) 2023, Leosac SAS - www.leosac.com
  *
- * Fields here are label, images, rectangle, ...
- * Anything that may be part of a visual / printing template.
- *
- * These factory functions creates the PIXI objects.
- */
-
+ * @license GNU LGPL version 3
+ **/
 import * as PIXI from "pixi.js-legacy";
 import bwipjs from 'bwip-js';
 import QRCode from 'qrcode';

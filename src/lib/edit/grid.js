@@ -1,3 +1,8 @@
+/**
+ * @copyright Copyright (c) 2023, Leosac SAS - www.leosac.com
+ *
+ * @license GNU LGPL version 3
+ **/
 import * as PIXI from "pixi.js-legacy";
 import {
     reloadTemplate

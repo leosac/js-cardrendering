@@ -1,3 +1,8 @@
+/**
+ * @copyright Copyright (c) 2023, Leosac SAS - www.leosac.com
+ *
+ * @license GNU LGPL version 3
+ **/
 import { useState } from 'react';
 import { withTranslation } from "react-i18next";
 import FilerobotImageEditor, { TABS } from 'react-filerobot-image-editor';
