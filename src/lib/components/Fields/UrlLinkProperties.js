@@ -3,12 +3,12 @@
  *
  * @license GNU LGPL version 3
  **/
-import { SketchPicker } from 'react-color';
 import { useState } from 'react';
 import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
 import GeneralHelper from "../../GeneralHelper"
+import ColorPicker from "../ColorPicker";
 
 function UrlLinkProperties({t, field, show, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
@@ -50,7 +50,7 @@ function UrlLinkProperties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.color')}</Form.Label>
-                <SketchPicker color={color} onChangeComplete={color => setColor(color.hex)} />
+                <ColorPicker color={color} onChange={setColor} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.fontfamily')}</Form.Label>
@@ -76,7 +76,7 @@ function UrlLinkProperties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.colorfill')}</Form.Label>
-                <SketchPicker color={colorFill} onChangeComplete={color => setColorFill(color.hex)} />
+                <ColorPicker color={colorFill} onChange={setColorFill} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.borderwidth')}</Form.Label>
@@ -84,7 +84,7 @@ function UrlLinkProperties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.bordercolor')}</Form.Label>
-                <SketchPicker color={borderColor} onChangeComplete={color => setBorderColor(color.hex)} />
+                <ColorPicker color={borderColor} onChange={setBorderColor} />
             </Form.Group>
             <Form.Group>
                 <Form.Check type="checkbox" label= {t('properties.autosize')} checked={autoSize} onChange={e => setAutoSize(e.target.value)} />

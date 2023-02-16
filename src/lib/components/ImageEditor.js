@@ -19,9 +19,9 @@ function ImageEditor({t, image, onChange}) {
                         <img src={currentImage} alt={t('properties.currentimage')} />
                     </div>
                     <div className="col-md-6 list-group">
-                        <button type="button" class="btn btn-primary">{t('create.loadfile')}</button>
+                        <button type="button" className="btn btn-primary">{t('create.loadfile')}</button>
                         {currentImage &&
-                            <button type="button" class="btn" onClick={() => setShowEditor(true)}>{t('common.edit')}</button>
+                            <button type="button" className="btn" onClick={() => setShowEditor(true)}>{t('common.edit')}</button>
                         }
                     </div>
                 </div>

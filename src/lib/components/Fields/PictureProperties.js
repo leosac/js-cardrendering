@@ -3,12 +3,12 @@
  *
  * @license GNU LGPL version 3
  **/
-import { SketchPicker } from 'react-color';
 import { useState } from 'react';
 import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
 import ImageEditor from "../ImageEditor";
+import ColorPicker from "../ColorPicker";
 
 function PictureProperties({t, field, show, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
@@ -36,7 +36,7 @@ function PictureProperties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.bordercolor')}</Form.Label>
-                <SketchPicker color={borderColor} onChangeComplete={color => setBorderColor(color.hex)} />
+                <ColorPicker color={borderColor} onChange={setBorderColor} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.picture')}</Form.Label>

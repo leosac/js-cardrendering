@@ -3,11 +3,11 @@
  *
  * @license GNU LGPL version 3
  **/
-import { SketchPicker } from 'react-color';
 import { useState } from 'react';
 import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
+import ColorPicker from "../ColorPicker";
 
 function Pdf417Properties({t, field, show, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
@@ -37,11 +37,11 @@ function Pdf417Properties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.color')}</Form.Label>
-                <SketchPicker color={color} onChangeComplete={color => setColor(color.hex)} />
+                <ColorPicker color={color} onChange={setColor} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.colorfill')}</Form.Label>
-                <SketchPicker color={colorFill} onChangeComplete={color => setColorFill(color.hex)} />
+                <ColorPicker color={colorFill} onChange={setColorFill} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.errorcorrection')}</Form.Label>

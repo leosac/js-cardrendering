@@ -3,11 +3,11 @@
  *
  * @license GNU LGPL version 3
  **/
- import { SketchPicker } from 'react-color';
 import { useState } from 'react';
 import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
+import ColorPicker from "../ColorPicker";
 import GeneralHelper from "../../GeneralHelper";
 
 function DataMatrixProperties({t, field, show, onClose, onSubmit}) {
@@ -40,11 +40,11 @@ function DataMatrixProperties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.color')}</Form.Label>
-                <SketchPicker color={color} onChangeComplete={color => setColor(color.hex)} />
+                <ColorPicker color={color} onChangeComplete={setColor} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.colorfill')}</Form.Label>
-                <SketchPicker color={colorFill} onChangeComplete={color => setColorFill(color.hex)} />
+                <ColorPicker color={colorFill} onChange={setColorFill} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.prop_datamatrix_symbolSize')}</Form.Label>
