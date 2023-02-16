@@ -514,7 +514,7 @@ function highlightFieldPositions(cardSide, field, previousxy)
 function selectAllFields(cardSide)
 {
     if (cardSide === undefined || cardSide == null) {
-        this.getSides().forEach(sideType => {
+        this.getSides.call(this).forEach(sideType => {
             const side = this.state.sides[sideType];
             selectAllFields.call(this, side);
         });

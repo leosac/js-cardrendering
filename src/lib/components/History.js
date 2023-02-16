@@ -11,7 +11,7 @@ import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker';
 import Carousel from 'react-bootstrap/Carousel';
 import DesignerModal from "./DesignerModal";
 
-function History({t, snapshots, show, onClose, onSubmit}) {
+function History({t, snapshots, show, editor, onClose, onSubmit}) {
     const [dates, setDates] = useState([new Date(), null]);
     const [index, setIndex] = useState(0);
 
@@ -51,7 +51,7 @@ function History({t, snapshots, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="snapshothistory" show={show} confirm={t('common.goto')} title={t('create.history')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="snapshothistory" show={show} editor={editor} confirm={t('common.goto')} title={t('create.history')} onClose={onClose} onSubmit={modalSubmit}>
             <Carousel activeIndex={index} onSelect={(selectedIndex, e) => setIndex(selectedIndex)}>
                 {snapshots.map((snapshot, index) => {
                     return (

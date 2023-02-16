@@ -37,7 +37,7 @@ function decimalToHexColor(number)
     {
         number = 0xFFFFFFFF + number + 1;
     }
-    return parseInt('0x' + ('00000000' + number.toString(16).toUpperCase()).substr(-6, 6), 16);
+    return '#' + ('00000000' + number.toString(16).toUpperCase()).substr(-6, 6);
 }
 
 function hexColorToSignedNumber(number, transparency)

@@ -9,16 +9,42 @@ import { withTranslation } from "react-i18next";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-function DesignerModal({t, show, id, title, children, onClose, onSubmit, confirm = t('properties.update')}) {
+function DesignerModal({t, show, editor, id, title, children, onClose, onSubmit, confirm = t('properties.update')}) {
     
     useEffect(() => {
         $(".modal-dialog").draggable({
             handle: ".modal-header"
         });
     });
+
+    function handleOnShow(e) {
+        if (editor) {
+            editor.enterModal();
+        }
+    }
+
+    function handleOnClose(e) {
+        if (onClose) {
+            onClose(e);
+        }
+
+        if (editor) {
+            editor.leaveModal();
+        }
+    }
+
+    function handleOnSubmit(e) {
+        if (onSubmit) {
+            onSubmit(e);
+        }
+
+        if (editor) {
+            editor.leaveModal();
+        }
+    }
     
     return (
-        <Modal id={id} show={show} onHide={onClose}>
+        <Modal id={id} show={show} onHide={handleOnClose} onShow={handleOnShow}>
             <Modal.Dialog>
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
@@ -27,8 +53,8 @@ function DesignerModal({t, show, id, title, children, onClose, onSubmit, confirm
                     {children}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={onSubmit}>{confirm}</Button>
-                    <Button variant="secondary" className="btnclose" onClick={onClose}>{t('properties.cancel')}</Button>
+                    <Button variant="primary" onClick={handleOnSubmit}>{confirm}</Button>
+                    <Button variant="secondary" className="btnclose" onClick={handleOnClose}>{t('properties.cancel')}</Button>
                 </Modal.Footer>
             </Modal.Dialog>
         </Modal>

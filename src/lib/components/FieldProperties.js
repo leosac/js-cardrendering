@@ -10,7 +10,7 @@ import DesignerModal from "./DesignerModal";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-function FieldProperties({t, field, show, onClose, onSubmit}) {
+function FieldProperties({t, field, show, editor, onClose, onSubmit}) {
     const [name, setName] = useState(field.name);
     const [height, setHeight] = useState(field.height);
     const [width, setWidth] = useState(field.width);
@@ -39,7 +39,7 @@ function FieldProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="field_properties" show={show} confirm={t('properties.update')} title={t('properties.prop_internal')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="field_properties" show={show} editor={editor} confirm={t('properties.update')} title={t('properties.prop_internal')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.name')}</Form.Label>
                 <Form.Control type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)} />
@@ -66,11 +66,10 @@ function FieldProperties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.rotation')}</Form.Label>
-                <Form.Control type="number" placeholder="0" value={rotation} onChange={e => setRotation(e.target.value)} />
-                <input type="number" className="form-control" id="field_rotation" placeholder="0" max="360" min="-360" />
+                <Form.Control type="number" placeholder="0" max="360" min="-360" value={rotation} onChange={e => setRotation(e.target.value)} />
             </Form.Group>
             <Form.Group>
-            <Form.Check type="checkbox" checked={useMacros} onChange={e => setUseMacros(e.target.value)} />
+            <Form.Check type="checkbox" checked={useMacros} onChange={e => setUseMacros(e.target.checked)} />
                 <OverlayTrigger placement="right" overlay={<Tooltip>{t('macros.tooltip')}</Tooltip>}>
                     <Form.Check.Label>
                         {t('properties.usemacros')}

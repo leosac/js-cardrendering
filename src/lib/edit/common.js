@@ -31,12 +31,12 @@ function zIndexCompare(a, b)
  */
 function sortByZIndex()
 {
-    this.getSides().forEach(sideType => {
+    this.getSides.call(this).forEach(sideType => {
         const side = this.state.sides[sideType];
         if (side.card)
             side.card.children.sort(zIndexCompare);
 
-        if (side.stage)
+        if (side.stage && side.stage.children)
             side.stage.children.sort(zIndexCompare);
     });
 }
@@ -56,11 +56,11 @@ function validateForm()
     return !validator.hasError();
 }
 
-function reloadTemplate()
+async function reloadTemplate()
 {
     const xmldoc = $.parseXML(toDPF.call(this));
     const xmlContent = $(xmldoc);
-    loadDPF.call(this, xmlContent);
+    await loadDPF.call(this, xmlContent);
 }
 
 /**
@@ -78,7 +78,7 @@ function changeFactory(factory, sideType)
 function animate()
 {
     let sides = [];
-    this.getSides().forEach(sideType => {
+    this.getSides.call(this, true).forEach(sideType => {
         sides.push(this.state.sides[sideType]);
     });
     animateSides(sides);
@@ -87,7 +87,9 @@ function animate()
 function animateSides(sides)
 {
     sides.forEach(side => {
-        side.renderer.render(side.stage);
+        if (side.stage) {
+            side.renderer.render(side.stage);
+        }
     });
     requestAnimationFrame(() => animateSides(sides));
 }

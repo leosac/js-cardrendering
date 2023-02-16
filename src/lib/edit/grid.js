@@ -40,7 +40,7 @@ function editGridConfirm(grid)
 function drawGrid(cardSide)
 {
     if (cardSide === undefined) {
-        this.getSides().forEach(sideType => {
+        this.getSides.call(this).forEach(sideType => {
             const side = this.state.sides[sideType];
             cleanGrid(side);
             if (this.state.grid.enabled) {

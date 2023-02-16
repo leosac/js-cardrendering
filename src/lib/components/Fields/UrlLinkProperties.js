@@ -10,7 +10,7 @@ import DesignerModal from "../DesignerModal";
 import GeneralHelper from "../../GeneralHelper"
 import ColorPicker from "../ColorPicker";
 
-function UrlLinkProperties({t, field, show, onClose, onSubmit}) {
+function UrlLinkProperties({t, field, show, editor, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
     const [color, setColor] = useState(field.color ?? '#000000');
     const [fontFamily, setFontFamily] = useState(field.fontFamily);
@@ -43,7 +43,7 @@ function UrlLinkProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="urllink_properties" show={show} title={t('properties.prop_urllink')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="urllink_properties" show={show} editor={editor} title={t('properties.prop_urllink')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.value')}</Form.Label>
                 <Form.Control type="text" placeholder="Text" value={value} onChange={e => setValue(e.target.value)} />
@@ -87,8 +87,8 @@ function UrlLinkProperties({t, field, show, onClose, onSubmit}) {
                 <ColorPicker color={borderColor} onChange={setBorderColor} />
             </Form.Group>
             <Form.Group>
-                <Form.Check type="checkbox" label= {t('properties.autosize')} checked={autoSize} onChange={e => setAutoSize(e.target.value)} />
-                <Form.Check type="checkbox" label= {t('properties.autofontscale')} checked={autoFontScale} onChange={e => setAutoFontScale(e.target.value)} />
+                <Form.Check type="checkbox" label= {t('properties.autosize')} checked={autoSize} onChange={e => setAutoSize(e.target.checked)} />
+                <Form.Check type="checkbox" label= {t('properties.autofontscale')} checked={autoFontScale} onChange={e => setAutoFontScale(e.target.checked)} />
             </Form.Group>
         </DesignerModal>
     );

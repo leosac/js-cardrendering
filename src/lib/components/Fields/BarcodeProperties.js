@@ -8,7 +8,7 @@ import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
 
-function BarcodeProperties({t, field, show, onClose, onSubmit}) {
+function BarcodeProperties({t, field, show, editor, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
     const [fontFamily, setFontFamily] = useState(field.fontFamily);
     const [fontSize, setFontSize] = useState(field.fontSize);
@@ -27,7 +27,7 @@ function BarcodeProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="barcode_properties" show={show} title={t('properties.prop_barcode')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="barcode_properties" show={show} editor={editor} title={t('properties.prop_barcode')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.value')}</Form.Label>
                 <Form.Control type="text" placeholder="Text" value={value} onChange={e => setValue(e.target.value)} />

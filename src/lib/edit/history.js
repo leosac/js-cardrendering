@@ -13,32 +13,32 @@ import {
     getRectoCanvasSnap
 } from './card';
 
-function undoTemplate()
+async function undoTemplate()
 {
     if (this.state.snapshots.undo.length > 1) {
         let snapshot = this.state.snapshots.undo.pop();
         addSnapshotToHistory(this.state.snapshots.redo, snapshot);
         snapshot = this.state.snapshots.undo[this.state.snapshots.undo.length - 1];
 
-        loadSnapshot(snapshot);
+        await loadSnapshot(snapshot);
     }
 }
 
-function redoTemplate()
+async function redoTemplate()
 {
     if (this.state.snapshots.redo.length > 0) {
         let snapshot = this.state.snapshots.redo.pop();
         addSnapshotToHistory(this.state.snapshots.undo, snapshot);
 
-        loadSnapshot(snapshot);
+        await loadSnapshot(snapshot);
     }
 }
 
-function loadSnapshot(snapshot)
+async function loadSnapshot(snapshot)
 {
     var xmldoc = $.parseXML(snapshot.content);
     let $xml = $(xmldoc);
-    loadDPF($xml);
+    await loadDPF.call(this, $xml);
 }
 
 function viewHistory()

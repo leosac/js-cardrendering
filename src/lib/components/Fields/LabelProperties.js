@@ -10,7 +10,7 @@ import DesignerModal from "../DesignerModal";
 import ColorPicker from "../ColorPicker";
 import GeneralHelper from '../../GeneralHelper';
 
-function LabelProperties({t, field, show, onClose, onSubmit}) {
+function LabelProperties({t, field, show, editor, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
     const [color, setColor] = useState(field.color ?? '#000000');
     const [fontFamily, setFontFamily] = useState(field.fontFamily);
@@ -49,7 +49,7 @@ function LabelProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="label_properties" show={show} title={t('properties.prop_label')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="label_properties" show={show} editor={editor} title={t('properties.prop_label')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.value')}</Form.Label>
                 <Form.Control type="text" placeholder="Text" value={value} onChange={e => setValue(e.target.value)} />
@@ -111,9 +111,9 @@ function LabelProperties({t, field, show, onClose, onSubmit}) {
                 <Form.Control type="text" placeholder="" value={maxLength} onChange={e => setMaxLength(e.target.value)} />
             </Form.Group>
             <Form.Group>
-                <Form.Check type="checkbox" label= {t('properties.autosize')} checked={autoSize} onChange={e => setAutoSize(e.target.value)} />
-                <Form.Check type="checkbox" label= {t('properties.autofontscale')} checked={autoFontScale} onChange={e => setAutoFontScale(e.target.value)} />
-                <Form.Check type="checkbox" label= {t('properties.wordbreak')} checked={wordBreak} onChange={e => setWordBreak(e.target.value)} />
+                <Form.Check type="checkbox" label= {t('properties.autosize')} checked={autoSize} onChange={e => setAutoSize(e.target.checked)} />
+                <Form.Check type="checkbox" label= {t('properties.autofontscale')} checked={autoFontScale} onChange={e => setAutoFontScale(e.target.checked)} />
+                <Form.Check type="checkbox" label= {t('properties.wordbreak')} checked={wordBreak} onChange={e => setWordBreak(e.target.checked)} />
             </Form.Group>
         </DesignerModal>
     );

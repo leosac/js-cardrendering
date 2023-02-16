@@ -21,12 +21,12 @@ import {
     reloadTemplate
 } from './common';
 
-function printTemplate()
+async function printTemplate()
 {
     unselectField.call(this);
     if (this.state.grid.enabled)
     {
-        this.getSides().forEach(sideType => {
+        this.getSides.call(this).forEach(sideType => {
             const side = this.state.sides[sideType];
             cleanGrid(side);
         });
@@ -40,21 +40,23 @@ function printTemplate()
         cardborder: 0,
         grid: grid
     });
-    reloadTemplate.call(this);
+    await reloadTemplate.call(this);
 
     // If we're in recto/verso mode, we need twice the height.
     let height = 0;
-    this.getSides().forEach(sideType => {
+    this.getSides.call(this).forEach(sideType => {
         const side = this.state.sides[sideType];
         height += side.renderer.view.height;
     });
 
     const mywindow = window.open('', 'Card', 'height=' + height + ',width=' + this.state.sides['recto'].renderer.view.width);
     mywindow.document.write('<html><head><title>Card</title>');
-    mywindow.document.write('<style>@page { size: 85.725mm 53.975mm; margin: 0; } body { overflow-x: visible; overflow-y: visible; }</style>');
+    if (this.state.currentlayout === 'cr80') {
+        mywindow.document.write('<style>@page { size: 85.725mm 53.975mm; margin: 0; } body { overflow-x: visible; overflow-y: visible; }</style>');
+    }
     mywindow.document.write('</head><body >');
 
-    this.getSides().forEach(sideType => {
+    this.getSides.call(this).forEach(sideType => {
         const side = this.state.sides[sideType];
         side.renderer.render(side.stage);
         mywindow.document.write('<img src="' + side.renderer.view.toDataURL("image/png") + '" style="width: 100%; height: 100%" />');
@@ -81,12 +83,10 @@ function printTemplate()
         mywindow.close();
 }
 
-function printCard()
+function getAllNamedFields()
 {
-    // Generate form inputs
-    document.getElementById('print_card_form').innerHTML = '';
-
-    this.getSides().forEach(sideType => {
+    let fields = [];
+    this.getSides.call(this).forEach(sideType => {
         const side = this.state.sides[sideType];
         const cardRef = side.card;
         for (let f = 0; f < cardRef.children.length; ++f)
@@ -94,50 +94,32 @@ function printCard()
             const child = cardRef.getChildAt(f);
             if (child.options !== undefined && child.options.name !== undefined && child.options.name !== '' && child.options.type !== undefined)
             {
-                let $input;
-                if (child.options.type === 'label' || child.options.type === 'barcode' || child.options.type === 'qrcode')
-                {
-                    $input = $('<div class="form-group">').html('<label for="pcard_' + child.options.name + '">' + child.options.name + '</label><input type="text" class="form-control" id="pcard_' + child.options.name + '" placeholder="' + child.options.value + '">');
-                    $('#print_card_form').append($input);
-                } else if (child.options.type === 'picture')
-                {
-                    const pcard = 'pcard_' + child.options.name;
-                    $input = $('<div class="form-group">').html('<label for="' + pcard + '">' + child.options.name + '</label><input type="text" class="form-control" id="' + pcard + '" value="' + child.options.value + '" style="display: none;"><div id="img-' + pcard + '"></div>');
-                    $('#print_card_form').append($input);
-                    $('#' + pcard).change(function ()
-                    {
-                        $('#img-' + pcard).imageEditor({
-                            'source': $('#' + pcard).val(),
-                            'maxHeight': 300,
-                            'applyCallBack': function (e)
-                            {
-                                $('#' + pcard).val(e);
-                            },
-                            'croppedCallBack': function (e)
-                            {
-                                $('#' + pcard).val(e);
-                                $('#' + pcard).change();
-                            }
-                        });
-                    });
-                    $('#pcard_' + child.options.name).change();
-                }
+                fields.push({
+                    name: child.options.name,
+                    type: child.options.type,
+                    value: child.options.value
+                });
             }
         }
     });
+    return fields;
+}
+
+function printCard()
+{
     this.setState({
         show_printcard: true
     })
 }
 
-function printCardConfirm()
+async function printCardConfirm(values)
 {
     // Duplicate template
-    const xmldoc = $.parseXML(toDPF());
+    const xmldoc = $.parseXML(toDPF.call(this));
     const $xml = $(xmldoc);
 
     // Update values from form. For each side if need be.
-    this.getSides().forEach(sideType => {
+    this.getSides.call(this).forEach(sideType => {
         const side = this.state.sides[sideType];
         const cardRef = side.card;
         let fields = [];
@@ -146,9 +128,8 @@ function printCardConfirm()
             const child = cardRef.getChildAt(f);
             if (child.options !== undefined && child.options.name !== undefined && child.options.name !== '' && child.options.type !== undefined)
             {
-                if (child.options.type === 'label' || child.options.type === 'barcode' || child.options.type === 'qrcode' || child.options.type === 'picture')
-                {
-                    child.options.value = $('#pcard_' + child.options.name).val();
+                if (values[child.options.name] !== undefined) {
+                    child.options.value = values[child.options.name];
                     fields.push(child);
                 }
             }
@@ -156,7 +137,7 @@ function printCardConfirm()
         for (let f = 0; f < fields.length; ++f)
         {
             cardRef.removeChild(fields[f]);
-            createField(
+            createField.call(this,
                 fields[f].options.type,
                 {x: fields[f].options.x, y: fields[f].options.y},
                 fields[f].options,
@@ -164,12 +145,12 @@ function printCardConfirm()
             );
         }
     });
-    printTemplate();
+    await printTemplate.call(this);
 
     // Restore template
-    loadDPF($xml);
+    await loadDPF.call(this, $xml);
 }
 
 export {
-    printCardConfirm, printCard, printTemplate
+    printCardConfirm, printCard, getAllNamedFields, printTemplate
 }

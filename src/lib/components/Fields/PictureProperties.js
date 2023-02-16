@@ -10,7 +10,7 @@ import DesignerModal from "../DesignerModal";
 import ImageEditor from "../ImageEditor";
 import ColorPicker from "../ColorPicker";
 
-function PictureProperties({t, field, show, onClose, onSubmit}) {
+function PictureProperties({t, field, show, editor, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
     const [borderWidth, setBorderWidth] = useState(field.borderWidth);
     const [borderColor, setBorderColor] = useState(field.borderColor ?? '#000000');
@@ -29,7 +29,7 @@ function PictureProperties({t, field, show, onClose, onSubmit}) {
     }
     
     return (
-        <DesignerModal id="picture_properties" show={show} title={t('properties.prop_picture')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="picture_properties" show={show} editor={editor} title={t('properties.prop_picture')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.borderwidth')}</Form.Label>
                 <Form.Control type="number" min="0" max="1" placeholder="1" value={borderWidth} onChange={e => setBorderWidth(e.target.value)} />
@@ -40,7 +40,7 @@ function PictureProperties({t, field, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.picture')}</Form.Label>
-                <ImageEditor image={value} onChange={img => { setValue(img); }} />
+                <ImageEditor image={value} onChange={img => { setValue(img)}} />
             </Form.Group>
         </DesignerModal>
     );

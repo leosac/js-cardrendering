@@ -59,7 +59,7 @@ function createRotationBox(position, scale, sideType)
     rbox.endFill();
     rbox.interactive = true;
     rbox.buttonMode = true;
-    rbox.cursor = 'url(/cursor-rotate.cur) 3 2, auto';
+    rbox.cursor = 'grab';
     rbox
         .on('mousedown', (event) =>
         {

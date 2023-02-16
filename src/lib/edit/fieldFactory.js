@@ -121,7 +121,7 @@ function createTextField(options)
 
     if (options.rotation > 0)
     {
-        label.rotation = PIXI.DEG_TO_RAD * options.rotation;
+        label.angle = options.rotation;
     }
     return label;
 }
@@ -185,7 +185,7 @@ function createUrlLinkField(options)
 
     if (options.rotation > 0)
     {
-        label.rotation = PIXI.DEG_TO_RAD * options.rotation;
+        label.angle = options.rotation;
     }
     return label;
 }
@@ -205,7 +205,7 @@ function createBarcodeField(options)
     options.width = barcode.width;
     if (options.rotation > 0)
     {
-        barcode.rotation = PIXI.DEG_TO_RAD * options.rotation;
+        barcode.angle = options.rotation;
     }
     return barcode;
 }
@@ -226,7 +226,7 @@ async function createQRCodeField(options)
 
     if (options.rotation > 0)
     {
-        sprite.rotation = PIXI.DEG_TO_RAD * options.rotation;
+        sprite.angle = options.rotation;
     }
     return sprite;
 }
@@ -257,7 +257,7 @@ function createPDF417Field(options)
     
         if (options.rotation > 0)
         {
-            sprite.rotation = PIXI.DEG_TO_RAD * options.rotation;
+            sprite.angle = options.rotation;
         }
         return sprite;
 
@@ -332,7 +332,7 @@ function createDatamatrixField(options)
     
         if (options.rotation > 0)
         {
-            sprite.rotation = PIXI.DEG_TO_RAD * options.rotation;
+            sprite.angle = options.rotation;
         }
         return sprite;
 
@@ -360,7 +360,7 @@ function createFingerprintField(options)
         }
         if (options.rotation > 0)
         {
-            sprite.rotation = PIXI.DEG_TO_RAD * options.rotation;
+            sprite.angle = options.rotation;
         }
         box.beginFill(0, 0);
         box.drawRect(0, 0, options.width, options.height);
@@ -431,7 +431,7 @@ function createPictureField(options, createOpt)
 
         if (options.rotation > 0)
         {
-            box.rotation = PIXI.DEG_TO_RAD * options.rotation;
+            box.angle = options.rotation;
         }
     };
     // Image is ready, apply options etc now.
@@ -460,7 +460,7 @@ function createRectangleShapeField(options)
     rectangle.position.set(options.x, options.y);
     if (options.rotation > 0)
     {
-        rectangle.rotation = PIXI.DEG_TO_RAD * options.rotation;
+        rectangle.angle = options.rotation;
     }
     return rectangle;
 }
@@ -478,7 +478,7 @@ function createCircleShapeField(options)
     circle.y = options.y;
     if (options.rotation > 0)
     {
-        circle.rotation = PIXI.DEG_TO_RAD * options.rotation;
+        circle.angle = options.rotation;
     }
     return circle;
 }

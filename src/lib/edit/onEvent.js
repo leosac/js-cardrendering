@@ -119,8 +119,9 @@ async function onCardKeyDown(event)
     {
         this.state.multiselection = true;
 
-        if (!this.preventkeystroke) {
+        if (!this.state.preventkeystroke) {
             if (this.state.selectedfield.length > 0) {
+                // A char
                 if (event.keyCode === 65) {
                     event.preventDefault();
                     selectAllFields.call(this);
@@ -136,11 +137,11 @@ async function onCardKeyDown(event)
                 }
                 // Z char
                 else if (event.keyCode === 89) {
-                    redoTemplate.call(this);
+                    await redoTemplate.call(this);
                 }
                 // Z char
                 else if (event.keyCode === 90) {
-                    undoTemplate.call(this);
+                    await undoTemplate.call(this);
                 }
             }
 
@@ -148,9 +149,9 @@ async function onCardKeyDown(event)
             if (event.keyCode === 86) {
                 if (await pasteField.call(this, -1, -1, 'recto')) {
                     // Avoid paste for few milliseconds
-                    this.preventkeystroke = true;
+                    this.state.preventkeystroke = true;
                     setTimeout(() => {
-                        this.preventkeystroke = false;
+                        this.state.preventkeystroke = false;
                     }, 300);
                 }
             }
@@ -164,11 +165,11 @@ async function onCardKeyDown(event)
 
 async function onCardPaste(event)
 {
-    if (!this.preventkeystroke) {
+    if (!this.state.preventkeystroke) {
         // Avoid paste for few milliseconds
-        this.preventkeystroke = true;
+        this.state.preventkeystroke = true;
         setTimeout(() => {
-            this.preventkeystroke = false;
+            this.state.preventkeystroke = false;
         }, 300);
 
         if (!await pasteField.call(this, -1, -1, 'recto')) {
@@ -199,7 +200,7 @@ function onCardKeyUp(event)
         this.setState({rotationmode: false});
     }
 
-    if (!this.preventkeystroke)  {
+    if (!this.state.preventkeystroke)  {
         // Catch "BACKSPACE" and "DELETE" keypress.
         // Key code have to be hardcoded as number.
         // See here for keycode: https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
@@ -229,15 +230,6 @@ function onCardKeyUp(event)
             }
 
             event.stopPropagation();
-        }
-    }
-
-    if (!this.preventkeystrokemodal)
-    {
-        //Escape key, close modal
-        if (event.keyCode === 27)
-        {
-            $(".modal.fade.show").find(".modal-footer").children(".btnclose").click();
         }
     }
 }

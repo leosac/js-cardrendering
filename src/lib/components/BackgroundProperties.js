@@ -3,14 +3,14 @@
  *
  * @license GNU LGPL version 3
  **/
-import { SketchPicker } from 'react-color';
 import { useState } from 'react';
 import Form from "react-bootstrap/Form";
 import { withTranslation } from "react-i18next";
 import DesignerModal from "./DesignerModal";
+import ColorPicker from './ColorPicker';
 import ImageEditor from "./ImageEditor";
 
-function BackgroundProperties({t, background, show, onClose, onSubmit}) {
+function BackgroundProperties({t, background, show, editor, onClose, onSubmit}) {
     const [type, setType] = useState(background.background_picture_layout ? 'picture' : 'color');
     const [color, setColor] = useState(background.color ?? '#FFFFFF');
     const [picture, setPicture] = useState(background.background_picture);
@@ -30,7 +30,7 @@ function BackgroundProperties({t, background, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="background_properties" show={show} confirm={t('properties.update')} title={t('properties.prop_background')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="background_properties" show={show} editor={editor} confirm={t('properties.update')} title={t('properties.prop_background')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.background_type')}</Form.Label>
                 <Form.Control as="select" value={type} onChange={e => setType(e.target.value)}>
@@ -40,11 +40,11 @@ function BackgroundProperties({t, background, show, onClose, onSubmit}) {
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.color')}</Form.Label>
-                <SketchPicker color={color} onChangeComplete={color => setColor(color.hex)} />
+                <ColorPicker color={color} onChange={color => setColor(color)} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.picture')}</Form.Label>
-                <ImageEditor image={picture} onChange={img => { setPicture(img); }} />
+                <ImageEditor image={picture} onChange={img => setPicture(img)} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.prop_background_style')}</Form.Label>

@@ -8,7 +8,7 @@ import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
 
-function QrCodeProperties({t, field, show, onClose, onSubmit}) {
+function QrCodeProperties({t, field, show, editor, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
     const [ecLevel, setEcLevel] = useState(field.ecLevel);
 
@@ -25,7 +25,7 @@ function QrCodeProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="qrCode_properties" show={show} title={t('properties.prop_qrcode')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="qrCode_properties" show={show} editor={editor} title={t('properties.prop_qrcode')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.value')}</Form.Label>
                 <Form.Control type="text" placeholder="Text" value={value} onChange={e => setValue(e.target.value)} />

@@ -8,7 +8,7 @@ import { Form } from "react-bootstrap";
 import { withTranslation } from "react-i18next";
 import DesignerModal from "./DesignerModal";
 
-function AddFieldFromList({t, fieldlist, show, onClose, onSubmit}) {
+function AddFieldFromList({t, fieldlist, show, editor, onClose, onSubmit}) {
     const [selectedField, setSelectedField] = useState();
 
     function modalSubmit() {
@@ -21,7 +21,7 @@ function AddFieldFromList({t, fieldlist, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="addfieldfromlist" show={show} confirm={t('common.add')} title={t('common.add')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="addfieldfromlist" show={show} editor={editor} confirm={t('common.add')} title={t('common.add')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('common.name')}</Form.Label>
                 <Form.Control as="select" value={selectedField} onChange={e => setSelectedField(e.target.value)}>

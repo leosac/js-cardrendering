@@ -560,8 +560,6 @@ function getBorderWidth(field)
             dropEventFonction(event, ui, "verso");
         }
     });
-
-    return side.stage;
 }
 
 /**
@@ -715,10 +713,10 @@ function newCard(layout)
         orientation: (layout !== 'cr80' && layout !== "custom") ? 'Portrait' : 'Landscape'
     });
 
-    this.getSides().forEach(sideType => {
+    return Promise.all(this.getSides.call(this).map(async sideType => {
         const side = this.state.sides[sideType];
-        createCardStage.call(this, side, layout, this.state.orientation, undefined, sideType, false);
-    });
+        await createCardStage.call(this, side, layout, this.state.orientation, undefined, sideType, false);
+    }));
 }
 
 function getRectoCanvas()

@@ -8,7 +8,7 @@ import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "./DesignerModal";
 
-function GridSettings({t, grid, show, onClose, onSubmit}) {
+function GridSettings({t, grid, show, editor, onClose, onSubmit}) {
     const [unit, setUnit] = useState(grid.unit);
     const [step, setStep] = useState(grid.step);
     const [zoom, setZoom] = useState(grid.zoom * 100);
@@ -35,7 +35,7 @@ function GridSettings({t, grid, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="editgrid" show={show} confirm={t('common.edit')} title={t('common.edit')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="editgrid" show={show} editor={editor} confirm={t('common.edit')} title={t('common.edit')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.grid_unit')}</Form.Label>
                 <Form.Control as="select" value={unit} onChange={e => setUnit(e.target.value)}>
@@ -53,10 +53,10 @@ function GridSettings({t, grid, show, onClose, onSubmit}) {
                 <Form.Control type="number" placeholder="100" value={zoom} onChange={e => setZoom(e.target.value)} />
             </Form.Group>
             <Form.Group>
-                <Form.Check type="checkbox" label={t('properties.grid_ruler')} checked={ruler} onChange={e => setRuler(e.target.value)} />
+                <Form.Check type="checkbox" label={t('properties.grid_ruler')} checked={ruler} onChange={e => setRuler(e.target.checked)} />
             </Form.Group>
             <Form.Group>
-                <Form.Check type="checkbox" label={t('properties.grid_enable')} checked={enabled} onChange={e => setEnabled(e.target.value)} />
+                <Form.Check type="checkbox" label={t('properties.grid_enable')} checked={enabled} onChange={e => setEnabled(e.target.checked)} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>{t('properties.grid_columns')}</Form.Label>

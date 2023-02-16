@@ -62,20 +62,20 @@ function CardRenderer({t, sideType, editor}) {
                         <FontAwesomeIcon icon={["fas", "fa-paste"]} />
                         <span>Paste</span>
                     </Item>
-                    <Item onClick={() => editor.undoTemplate()} disabled={editor.state.snapshots.undo.length <= 1}>
+                    <Item onClick={editor.undoTemplate} disabled={editor.state.snapshots.undo.length <= 1}>
                         <span>Undo</span>
                     </Item>
-                    <Item onClick={() => editor.redoTemplate()} disabled={editor.state.snapshots.redo.length <= 1}>
+                    <Item onClick={editor.redoTemplate} disabled={editor.state.snapshots.redo.length <= 1}>
                         <span>Redo</span>
                     </Item>
-                    <Item onClick={() => editor.viewHistory()} disabled={editor.state.snapshots.undo.length <= 1 && editor.state.snapshots.redo.length <= 0}>
+                    <Item onClick={editor.viewHistory} disabled={editor.state.snapshots.undo.length <= 1 && editor.state.snapshots.redo.length <= 0}>
                         <span>History...</span>
                     </Item>
                     <Separator />
                     <Item onClick={({ event }) => editor.addFieldFromList(event, canvasRef, sideType)}>
                         <span>Add field from list...</span>
                     </Item>
-                    <Item onClick={() => editor.editGrid()}>
+                    <Item onClick={editor.editGrid}>
                         <span>View Settings...</span>
                     </Item>
                     <Separator />

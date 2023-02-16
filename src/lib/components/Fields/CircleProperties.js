@@ -9,7 +9,7 @@ import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
 import ColorPicker from "../ColorPicker";
 
-function CircleProperties({t, field, show, onClose, onSubmit}) {
+function CircleProperties({t, field, show, editor, onClose, onSubmit}) {
     const [color, setColor] = useState(field.color ?? '#000000');
     const [borderWidth, setBorderWidth] = useState(field.borderWidth);
     const [borderColor, setBorderColor] = useState(field.borderColor ?? '#000000');
@@ -28,7 +28,7 @@ function CircleProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="circle_properties" show={show} title={t('properties.prop_circle')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="circle_properties" show={show} editor={editor} title={t('properties.prop_circle')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.color')}</Form.Label>
                 <ColorPicker color={color} onChange={setColor} />

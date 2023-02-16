@@ -8,7 +8,7 @@ import { withTranslation } from "react-i18next";
 import Form from 'react-bootstrap/Form';
 import DesignerModal from "../DesignerModal";
 
-function FingerprintProperties({t, field, show, onClose, onSubmit}) {
+function FingerprintProperties({t, field, show, editor, onClose, onSubmit}) {
     const [autoRequest, setAutoRequest] = useState(field.autoRequest);
     const [targets, setTargets] = useState(field.targets ?? []);
 
@@ -42,9 +42,9 @@ function FingerprintProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="fingerprint_properties" show={show} title={t('properties.prop_fingerprint')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="fingerprint_properties" show={show} editor={editor} title={t('properties.prop_fingerprint')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
-                <Form.Check type="checkbox" label={t('properties.auto_request')} checked={autoRequest} onChange={e => setAutoRequest(e.target.value)} />
+                <Form.Check type="checkbox" label={t('properties.auto_request')} checked={autoRequest} onChange={e => setAutoRequest(e.target.checked)} />
             </Form.Group>
             <fieldset>
                 <legend>{t('properties.targets')}</legend>

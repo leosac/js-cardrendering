@@ -10,7 +10,7 @@ import DesignerModal from "../DesignerModal";
 import ColorPicker from "../ColorPicker";
 import GeneralHelper from "../../GeneralHelper";
 
-function DataMatrixProperties({t, field, show, onClose, onSubmit}) {
+function DataMatrixProperties({t, field, show, editor, onClose, onSubmit}) {
     const [value, setValue] = useState(field.value);
     const [color, setColor] = useState(field.color);
     const [colorFill, setColorFill] = useState(field.colorFill);
@@ -33,7 +33,7 @@ function DataMatrixProperties({t, field, show, onClose, onSubmit}) {
     }
 
     return (
-        <DesignerModal id="dataMatrix_properties" show={show} title={t('properties.prop_datamatrix')} onClose={onClose} onSubmit={modalSubmit}>
+        <DesignerModal id="dataMatrix_properties" show={show} editor={editor} title={t('properties.prop_datamatrix')} onClose={onClose} onSubmit={modalSubmit}>
             <Form.Group>
                 <Form.Label>{t('properties.value')}</Form.Label>
                 <Form.Control type="text" placeholder="Text" value={value} onChange={e => setValue(e.target.value)} />

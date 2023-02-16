@@ -87,219 +87,222 @@ function toDPF()
     var xml = '<?xml version="1.0" encoding="utf-8"?>\n';
     xml += '<Template xmlns:i="http://www.w3.org/2001/XMLSchema-instance" z:Id="' + ++oid + '" xmlns:d1p1="DataPrinterCore" i:type="d1p1:DataPrinter.Core.Objects.Template" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/" xmlns="http://schemas.datacontract.org/2004/07/DataPrinter.Core.Objects">\n';
     xml += '<CardSides z:Id="' + ++oid + '" z:Size="2">\n';
-    this.getSides().forEach(sideType => {
-        const side = this.state.sides[sideType].card;
-        //Inverse size regarding orientation
-        if (this.state.orientation === "Portrait")
-            this.layouts['px'][this.state.currentlayout] = [this.layouts['px'][this.state.currentlayout][0], this.layouts['px'][this.state.currentlayout][1]];
+    this.getSides.call(this, true).forEach(sideType => {
+        const cardRef = this.state.sides[sideType].card;
+        if (cardRef)
+        {
+            //Inverse size regarding orientation
+            if (this.state.orientation === "Portrait")
+                this.layouts['px'][this.state.currentlayout] = [this.layouts['px'][this.state.currentlayout][0], this.layouts['px'][this.state.currentlayout][1]];
 
-        xml += '<CardSide z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.CardSide">\n';
-        if (side.options.background_picture !== '')
-        {
-            xml += '<BackgroundImage z:Id="' + ++oid + '">';
-            if (side.options.background_picture !== undefined &&
-                side.options.background_picture.length > 0)
+            xml += '<CardSide z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.CardSide">\n';
+            if (cardRef.options.background_picture !== '')
             {
-                const bgvalue = a2hex(atob(side.options.background_picture.split(',')[1]));
-                xml += xml_escape(bgvalue);
-            }
-            xml += '</BackgroundImage>';
-
-            xml += '<BackgroundImageLayout>' + side.options.background_picture_layout
-                + '</BackgroundImageLayout>\n';
-        }
-        else
-        {
-            // No background image
-            xml += '<BackgroundImage i:nil="true" />\n';
-            xml += '<BackgroundImageLayout>3</BackgroundImageLayout>\n';
-        }
-        xml += '<BackgroundImageLocation i:nil="true" />\n';
-        xml += '<BackgroundSolid>' + ((side !== null) ? xml_color(side.options.color, true) : -1) + '</BackgroundSolid>\n';
-        xml += '<ContactChipLocation>0</ContactChipLocation>\n';
-        var fields = '';
-        var nbfields = 0;
-        if (side.children && side.children.length > 0)
-        {
-            for (var f = 0; f < side.children.length; ++f)
-            {
-                var child = side.getChildAt(f);
-                if (child.options !== undefined && child.options.type !== undefined)
+                xml += '<BackgroundImage z:Id="' + ++oid + '">';
+                if (cardRef.options.background_picture !== undefined &&
+                    cardRef.options.background_picture.length > 0)
                 {
-                    let value = child.options.value;
-                    if (child.options.type === 'picture')
+                    const bgvalue = a2hex(atob(cardRef.options.background_picture.split(',')[1]));
+                    xml += xml_escape(bgvalue);
+                }
+                xml += '</BackgroundImage>';
+
+                xml += '<BackgroundImageLayout>' + cardRef.options.background_picture_layout
+                    + '</BackgroundImageLayout>\n';
+            }
+            else
+            {
+                // No background image
+                xml += '<BackgroundImage i:nil="true" />\n';
+                xml += '<BackgroundImageLayout>3</BackgroundImageLayout>\n';
+            }
+            xml += '<BackgroundImageLocation i:nil="true" />\n';
+            xml += '<BackgroundSolid>' + ((cardRef.options.color !== null) ? xml_color(cardRef.options.color, true) : -1) + '</BackgroundSolid>\n';
+            xml += '<ContactChipLocation>0</ContactChipLocation>\n';
+            var fields = '';
+            var nbfields = 0;
+            if (cardRef.children && cardRef.children.length > 0)
+            {
+                for (var f = 0; f < cardRef.children.length; ++f)
+                {
+                    var child = cardRef.getChildAt(f);
+                    if (child.options !== undefined && child.options.type !== undefined)
                     {
-                        if (value !== undefined && value.length > 0)
+                        let value = child.options.value;
+                        if (child.options.type === 'picture')
                         {
-                            value = a2hex(atob(value.split(',')[1]));
+                            if (value !== undefined && value.length > 0)
+                            {
+                                value = a2hex(atob(value.split(',')[1]));
+                            }
                         }
-                    }
-                    let prop = '';
-                    if (child.options.conditionalRenderingEntries)
-                    {
-                        prop += '<ConditionalRenderingEntries z:Id="' + ++oid + '" z:Size="' + child.options.conditionalRenderingEntries.length + '">\n';
-                        for (var c = 0; c < child.options.conditionalRenderingEntries.length; ++c)
+                        let prop = '';
+                        if (child.options.conditionalRenderingEntries)
                         {
-                            prop += '<ConditionalRenderingEntry z:Id="' + ++oid + '">\n';
-                            prop += '<Condition z:Id="' + ++oid + '">' + xml_escape(child.options.conditionalRenderingEntries[c].condition) + '</Condition>\n';
-                            prop += '<PropertyValue z:Id="' + ++oid + '">' + xml_escape(child.options.conditionalRenderingEntries[c].propertyValue) + '</PropertyValue>\n';
-                            prop += '<TargetProperty z:Id="' + ++oid + '">' + xml_escape(child.options.conditionalRenderingEntries[c].targetProperty) + '</TargetProperty>\n';
-                            prop += '</ConditionalRenderingEntry>\n';
+                            prop += '<ConditionalRenderingEntries z:Id="' + ++oid + '" z:Size="' + child.options.conditionalRenderingEntries.length + '">\n';
+                            for (var c = 0; c < child.options.conditionalRenderingEntries.length; ++c)
+                            {
+                                prop += '<ConditionalRenderingEntry z:Id="' + ++oid + '">\n';
+                                prop += '<Condition z:Id="' + ++oid + '">' + xml_escape(child.options.conditionalRenderingEntries[c].condition) + '</Condition>\n';
+                                prop += '<PropertyValue z:Id="' + ++oid + '">' + xml_escape(child.options.conditionalRenderingEntries[c].propertyValue) + '</PropertyValue>\n';
+                                prop += '<TargetProperty z:Id="' + ++oid + '">' + xml_escape(child.options.conditionalRenderingEntries[c].targetProperty) + '</TargetProperty>\n';
+                                prop += '</ConditionalRenderingEntry>\n';
+                            }
+                            prop += '</ConditionalRenderingEntries>\n';
                         }
-                        prop += '</ConditionalRenderingEntries>\n';
-                    }
-                    prop += '<Height>' + Math.round(child.options.height) + '</Height>\n';
+                        prop += '<Height>' + Math.round(child.options.height) + '</Height>\n';
 
-                    // Fix for pre 4.0.0.0 versions
-                    if (this.state.formatVersion && checkVersion(this.state.formatVersion, "4.0.0.0") === -1)
-                        prop += '<Width>' + Math.round(child.options.width) + '</Width>\n';
-
-                    prop += '<IsVisible>true</IsVisible>\n';
-                    prop += '<IsWarningDisabled>false</IsWarningDisabled>\n';
-                    prop += '<Name z:Id="' + ++oid + '">' + xml_escape(child.options.name) + '</Name>\n';
-
-                    // We do not serialize the property if the rotation angle is not set.
-                    if (child.options.rotation !== 0)
-                    {
-                        prop += '<RotationAngle>' + Math.round(child.options.rotation) + '</RotationAngle>\n';
-                    }
-                    
-                    prop += '<UseMacros>' + child.options.useMacros + '</UseMacros>\n';
-                    if (value !== undefined)
-                    {
-                        prop += '<Value z:Id="' + ++oid + '">' + xml_escape(value) + '</Value>\n';
-                    }
-                    else
-                    {
-                        prop += '<Value z:Id="' + ++oid + '" i:nil="true" />\n';
-                    }
-
-                    // Fix for pre 4.0.0.0 versions
-                    if (!this.state.formatVersion || checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
-                        prop += '<Width>' + Math.round(child.options.width) + '</Width>\n';
-
-                    prop += '<XPosition>' + Math.round(child.options.x) + '</XPosition>\n';
-                    prop += '<YPosition>' + Math.round(child.options.y) + '</YPosition>\n';
-                    prop += '<ZIndex>' + Math.round(child.options.zIndex) + '</ZIndex>\n';
-
-                    if (child.options.type === 'label')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.TextField">\n';
-                        prop += '<Align z:Id="' + ++oid + '">' + xml_default(child.options.align, 'TopLeft') + '</Align>\n';
-                        prop += '<AutoFontResize>' + child.options.scaleFont + '</AutoFontResize>\n';
-                        prop += '<AutoResize>' + child.options.autoSize + '</AutoResize>\n';
-
-                        //Used since format version 4.0.0.0, or without version
-                        if (!this.state.formatVersion || checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
-                            prop += '<BorderSize>' + child.options.borderWidth + '</BorderSize>\n';
-
-                        prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
-
-                        //Used since format version 4.0.0.0, or without version
-                        if (!this.state.formatVersion || checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
-                            prop += '<ColorBorder>' + child.options.borderColor + '</ColorBorder>\n';
-
-
-                        prop += '<ColorFill>' + xml_color(child.options.colorFill, true) + '</ColorFill>\n';
-                        prop += '<Font z:Id="' + ++oid + '">' + child.options.fontFamily + ', ' + child.options.fontSize;
-                        if (child.options.fontStyle && child.options.fontStyle !== 'Normal')
-                        {
-                            prop += ', style=' + child.options.fontStyle;
-                        }
-                        prop += '</Font>\n';
-
-                        //Used for compatibility with format before 4.0.0.0
+                        // Fix for pre 4.0.0.0 versions
                         if (this.state.formatVersion && checkVersion(this.state.formatVersion, "4.0.0.0") === -1)
-                            prop += '<HasBorder>' + (child.options.borderWidth > 0) + '</HasBorder>\n';
+                            prop += '<Width>' + Math.round(child.options.width) + '</Width>\n';
 
-                        prop += '<MaxLength>' + child.options.maxLength + '</MaxLength>\n';
-                        prop += '<WordBreak>' + child.options.wordBreak + '</WordBreak>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    } else if (child.options.type === 'picture')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.PictureField">\n';
-                        prop += '<HasBorder>' + (child.options.borderWidth > 0) + '</HasBorder>\n';
-                        prop += '<KeepFileReference>false</KeepFileReference>\n';
-                        prop += '<SizeMode>4</SizeMode>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    } else if (child.options.type === 'barcode')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.BarcodeField">\n';
-                        prop += '<Font z:Id="' + ++oid + '">' + child.options.fontFamily + '</Font>\n';
-                        prop += '<Size>' + child.options.fontSize + '</Size>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    } else if (child.options.type === 'qrcode')
-                    {
-                        var eclevels = {L: 0, M: 1, Q: 2, H: 3};
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.QRCodeField">\n';
-                        prop += '<ErrorCorrection>' + eclevels[child.options.ecLevel] + '</ErrorCorrection>\n';
-                        prop += '<Scale>2</Scale>\n';
-                        prop += '<Version>4</Version>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    } else if (child.options.type === 'pdf417')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.PDF417Field">\n';
-                        prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
-                        prop += '<ErrorCorrection>' + child.options.ecLevel + '</ErrorCorrection>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    } else if (child.options.type === 'dataMatrix')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.DatamatrixField">\n';
-                        prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
-                        prop += '<Scheme>' + child.options.Scheme + '</Scheme>\n';
-                        prop += '<SizeIdx>' + child.options.SizeIdx + '</SizeIdx>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    } else if (child.options.type === 'fingerprint')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.Fingerprint">\n';
-                        prop += '<AutoRequest>' + child.options.autoRequest + '</AutoRequest>\n';
-                        prop += '<Targets>';
-                        child.options.targets.forEach((t) => {
-                           prop += '<Target>' + t + '</Target>';
-                        });
-                        prop += '</Targets>';
-                        fields += prop;
-                        fields += '</Field>\n';
+                        prop += '<IsVisible>true</IsVisible>\n';
+                        prop += '<IsWarningDisabled>false</IsWarningDisabled>\n';
+                        prop += '<Name z:Id="' + ++oid + '">' + xml_escape(child.options.name) + '</Name>\n';
+
+                        // We do not serialize the property if the rotation angle is not set.
+                        if (child.options.rotation !== 0)
+                        {
+                            prop += '<RotationAngle>' + Math.round(child.options.rotation) + '</RotationAngle>\n';
+                        }
+                        
+                        prop += '<UseMacros>' + child.options.useMacros + '</UseMacros>\n';
+                        if (value !== undefined)
+                        {
+                            prop += '<Value z:Id="' + ++oid + '">' + xml_escape(value) + '</Value>\n';
+                        }
+                        else
+                        {
+                            prop += '<Value z:Id="' + ++oid + '" i:nil="true" />\n';
+                        }
+
+                        // Fix for pre 4.0.0.0 versions
+                        if (!this.state.formatVersion || checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
+                            prop += '<Width>' + Math.round(child.options.width) + '</Width>\n';
+
+                        prop += '<XPosition>' + Math.round(child.options.x) + '</XPosition>\n';
+                        prop += '<YPosition>' + Math.round(child.options.y) + '</YPosition>\n';
+                        prop += '<ZIndex>' + Math.round(child.options.zIndex) + '</ZIndex>\n';
+
+                        if (child.options.type === 'label')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.TextField">\n';
+                            prop += '<Align z:Id="' + ++oid + '">' + xml_default(child.options.align, 'TopLeft') + '</Align>\n';
+                            prop += '<AutoFontResize>' + child.options.scaleFont + '</AutoFontResize>\n';
+                            prop += '<AutoResize>' + child.options.autoSize + '</AutoResize>\n';
+
+                            //Used since format version 4.0.0.0, or without version
+                            if (!this.state.formatVersion || checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
+                                prop += '<BorderSize>' + child.options.borderWidth + '</BorderSize>\n';
+
+                            prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
+
+                            //Used since format version 4.0.0.0, or without version
+                            if (!this.state.formatVersion || checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
+                                prop += '<ColorBorder>' + child.options.borderColor + '</ColorBorder>\n';
+
+
+                            prop += '<ColorFill>' + xml_color(child.options.colorFill, true) + '</ColorFill>\n';
+                            prop += '<Font z:Id="' + ++oid + '">' + child.options.fontFamily + ', ' + child.options.fontSize;
+                            if (child.options.fontStyle && child.options.fontStyle !== 'Normal')
+                            {
+                                prop += ', style=' + child.options.fontStyle;
+                            }
+                            prop += '</Font>\n';
+
+                            //Used for compatibility with format before 4.0.0.0
+                            if (this.state.formatVersion && checkVersion(this.state.formatVersion, "4.0.0.0") === -1)
+                                prop += '<HasBorder>' + (child.options.borderWidth > 0) + '</HasBorder>\n';
+
+                            prop += '<MaxLength>' + child.options.maxLength + '</MaxLength>\n';
+                            prop += '<WordBreak>' + child.options.wordBreak + '</WordBreak>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        } else if (child.options.type === 'picture')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.PictureField">\n';
+                            prop += '<HasBorder>' + (child.options.borderWidth > 0) + '</HasBorder>\n';
+                            prop += '<KeepFileReference>false</KeepFileReference>\n';
+                            prop += '<SizeMode>4</SizeMode>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        } else if (child.options.type === 'barcode')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.BarcodeField">\n';
+                            prop += '<Font z:Id="' + ++oid + '">' + child.options.fontFamily + '</Font>\n';
+                            prop += '<Size>' + child.options.fontSize + '</Size>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        } else if (child.options.type === 'qrcode')
+                        {
+                            var eclevels = {L: 0, M: 1, Q: 2, H: 3};
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.QRCodeField">\n';
+                            prop += '<ErrorCorrection>' + eclevels[child.options.ecLevel] + '</ErrorCorrection>\n';
+                            prop += '<Scale>2</Scale>\n';
+                            prop += '<Version>4</Version>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        } else if (child.options.type === 'pdf417')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.PDF417Field">\n';
+                            prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
+                            prop += '<ErrorCorrection>' + child.options.ecLevel + '</ErrorCorrection>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        } else if (child.options.type === 'dataMatrix')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.DatamatrixField">\n';
+                            prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
+                            prop += '<Scheme>' + child.options.Scheme + '</Scheme>\n';
+                            prop += '<SizeIdx>' + child.options.SizeIdx + '</SizeIdx>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        } else if (child.options.type === 'fingerprint')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.Fingerprint">\n';
+                            prop += '<AutoRequest>' + child.options.autoRequest + '</AutoRequest>\n';
+                            prop += '<Targets>';
+                            child.options.targets.forEach((t) => {
+                            prop += '<Target>' + t + '</Target>';
+                            });
+                            prop += '</Targets>';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        }
+                        else if (child.options.type === 'rectangle')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.RectangleShapeField">\n';
+                            prop += '<BorderColor>' + xml_color(child.options.borderColor, true) + '</BorderColor>\n';
+                            prop += '<BorderWidth>' + child.options.borderWidth + '</BorderWidth>\n';
+                            prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        } else if (child.options.type === 'circle')
+                        {
+                            fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.CircleShapeField">\n';
+                            prop += '<BorderColor>' + xml_color(child.options.borderColor, true) + '</BorderColor>\n';
+                            prop += '<BorderWidth>' + child.options.borderWidth + '</BorderWidth>\n';
+                            prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
+                            fields += prop;
+                            fields += '</Field>\n';
+                        }
+                        nbfields++;
                     }
-                    else if (child.options.type === 'rectangle')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.RectangleShapeField">\n';
-                        prop += '<BorderColor>' + xml_color(child.options.borderColor, true) + '</BorderColor>\n';
-                        prop += '<BorderWidth>' + child.options.borderWidth + '</BorderWidth>\n';
-                        prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    } else if (child.options.type === 'circle')
-                    {
-                        fields += '<Field z:Id="' + ++oid + '" i:type="d1p1:DataPrinter.Core.Objects.CircleShapeField">\n';
-                        prop += '<BorderColor>' + xml_color(child.options.borderColor, true) + '</BorderColor>\n';
-                        prop += '<BorderWidth>' + child.options.borderWidth + '</BorderWidth>\n';
-                        prop += '<Color>' + xml_color(child.options.color, true) + '</Color>\n';
-                        fields += prop;
-                        fields += '</Field>\n';
-                    }
-                    nbfields++;
                 }
             }
+            xml += '<Fields z:Id="' + ++oid + '" z:Size="' + nbfields + '">\n';
+            xml += fields;
+            xml += '</Fields>\n';
+            //Used since format version 4.0.0.0, or without version
+            if (this.state.formatVersion && checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
+                xml += '<HeightPx>' + this.layouts['px'][this.state.currentlayout][1] + '</HeightPx>\n';
+            xml += '<MagneticStripeLocation>0</MagneticStripeLocation>\n';
+            xml += '<ShouldBePrinted>true</ShouldBePrinted>\n';
+            //Used since format version 4.0.0.0, or without version
+            if (this.state.formatVersion && checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
+                xml += '<WidthPx>' + this.layouts['px'][this.state.currentlayout][0] + '</WidthPx>\n';
+            xml += '</CardSide>\n';
         }
-        xml += '<Fields z:Id="' + ++oid + '" z:Size="' + nbfields + '">\n';
-        xml += fields;
-        xml += '</Fields>\n';
-        //Used since format version 4.0.0.0, or without version
-        if (this.state.formatVersion && checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
-            xml += '<HeightPx>' + this.layouts['px'][this.state.currentlayout][1] + '</HeightPx>\n';
-        xml += '<MagneticStripeLocation>0</MagneticStripeLocation>\n';
-        xml += '<ShouldBePrinted>true</ShouldBePrinted>\n';
-        //Used since format version 4.0.0.0, or without version
-        if (this.state.formatVersion && checkVersion(this.state.formatVersion, "4.0.0.0") !== -1)
-            xml += '<WidthPx>' + this.layouts['px'][this.state.currentlayout][0] + '</WidthPx>\n';
-        xml += '</CardSide>\n';
     });
     xml += '</CardSides>\n';
     xml += '<Category i:nil="true" />\n';
@@ -421,7 +424,7 @@ async function loadDPF($xml)
 
     // For now, force recto side
     const recto = $template.children('CardSides').children('CardSide').first();
-    this.state.sides['recto'].stage = createCardStage.call(this, this.state.sides['recto'], this.state.layout, this.state.orientation, recto, 'recto', false);
+    await createCardStage.call(this, this.state.sides['recto'], this.state.layout, this.state.orientation, recto, 'recto', false);
 
     let verso;
     if ($template.children('HasVerso').text() === 'true')
@@ -429,8 +432,7 @@ async function loadDPF($xml)
         this.setState({ isRectoVerso: true });
         verso = $template.children('CardSides').children('CardSide').last();
     }
-    this.state.sides['verso'].stage = createCardStage.call(this, this.state.sides['verso'], this.state.layout, this.state.orientation, verso, 'verso', false);
-    return;
+    await createCardStage.call(this, this.state.sides['verso'], this.state.layout, this.state.orientation, verso, 'verso', false);
 }
 
 export {

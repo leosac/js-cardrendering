@@ -6,7 +6,6 @@
 import $ from 'jquery';
 import React from "react";
 import { withTranslation } from "react-i18next";
-import FormTextEntry from "./FormTextEntry";
 import GridSettings from "./GridSettings";
 import AddFieldFromList from "./AddFieldFromList";
 import GeneralHelper from "../GeneralHelper";
@@ -35,7 +34,7 @@ import {
     loadSnapshot, saveCurrentSnapshot, undoTemplate, redoTemplate, viewHistory
 } from '../edit/history';
 import {
-    printCardConfirm, printCard, printTemplate
+    printCardConfirm, printCard, printTemplate, getAllNamedFields
 } from '../edit/print';
 import {
     downloadDPF, downloadImage
@@ -57,6 +56,8 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import NavDivider from "./NavDivider"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -71,6 +72,7 @@ class CardDesigner extends React.Component {
         this.printTemplate = printTemplate.bind(this);
         this.printCard = printCard.bind(this);
         this.printCardConfirm = printCardConfirm.bind(this);
+        this.getAllNamedFields = getAllNamedFields.bind(this);
         this.onCardKeyDown = onCardKeyDown.bind(this);
         this.onCardKeyUp = onCardKeyUp.bind(this);
         this.onCardPaste = onCardPaste.bind(this);
@@ -186,7 +188,6 @@ class CardDesigner extends React.Component {
             multiselection: false,
             rotationmode: false,
             preventkeystroke: false,
-            preventkeystrokeModal: true,
             
             show_field: false,
             show_field_label: false,
@@ -222,8 +223,12 @@ class CardDesigner extends React.Component {
         }
     }
 
-    getSides() {
-        return Object.keys(this.state.sides);
+    getSides(all = false) {
+        const sides = [ 'recto' ];
+        if (all || this.state.isRectoVerso) {
+            sides.push('verso');
+        }
+        return sides;
     }
 
     //This function check if used version is the required version
@@ -364,41 +369,45 @@ class CardDesigner extends React.Component {
         reader.readAsText(file, "UTF-8");
     }
 
+    changeName(name) {
+        this.setState({
+            name: name
+        })
+    }
+
     changeLayout(layout) {
         this.setState({
             currentlayout: layout
         })
     }
 
-    async changeOrientation(orientation) {
-        this.setState({orientation: orientation});
-        await Promise.all(this.getSides().map(async sideType => {
+    changeIsRectoVerso(isRectoVerso) {
+        this.setState({ isRectoVerso: isRectoVerso });
+        return Promise.all(this.getSides(true).map(async sideType => {
             const side = this.state.sides[sideType];
-            side.stage = await this.createCardStage(side, this.currentlayout, orientation, undefined, sideType, false);
+            await this.createCardStage(side, this.state.currentlayout, this.state.orientation, undefined, sideType, false);
         }));
     }
 
+    changeOrientation(orientation) {
+        this.setState({orientation: orientation});
+        return Promise.all(this.getSides().map(async sideType => {
+            const side = this.state.sides[sideType];
+            await this.createCardStage(side, this.state.currentlayout, orientation, undefined, sideType, false);
+        }));
+    }
+
+    enterModal() {
+        //Disable keyblinds
+        this.state.preventkeystroke = true;
+    }
+
+    leaveModal() {
+        //Activate keyblinds
+        this.state.preventkeystroke = false;
+    }
+
     componentDidMount() {
-        //Actions when a modal is open
-        $(document).on('show.bs.modal', (event) =>
-        {
-            //Disable keyblinds
-            this.setState({
-                preventkeystroke: true,
-                preventkeystrokeModal: false
-            });
-        });
-
-        //Actions when a modal is close
-        $(document).on('hidden.bs.modal', (event) =>
-        {
-            //Activate keyblinds
-            this.setState({
-                preventkeystroke: false,
-                preventkeystrokeModal: true
-            });
-        });
-
         $(document).on('keydown', (event) =>
         {
             this.onCardKeyDown(event);
@@ -412,53 +421,42 @@ class CardDesigner extends React.Component {
             this.onCardPaste(event);
         });
 
-        $('input').on('focus', () => {
-            this.setState({
-                preventkeystroke: true
-            });
-        });
-        $('input').on('blur', () => {
-            this.setState({
-                preventkeystroke: false
-            });
-        });
-
-        this.newCard(GeneralHelper.getLayouts(this.props.enabledCardSizes)[0].value);
-
-        const content = this.props.content;
-        if (content !== undefined)
-        {
-            setTimeout(() =>
+        this.newCard(GeneralHelper.getLayouts(this.props.enabledCardSizes)[0].value).then(() => {
+            const content = this.props.content;
+            if (content !== undefined)
             {
-                var xmldoc = $.parseXML(content);
-                let $xml = $(xmldoc);
-    
-                //TODO Make all functions related async
-                this.loadDPF($xml).then(() => {
-                    setTimeout(() => {
-                        this.saveCurrentSnapshot();
-                    }, 2500);
-                });
-            }, 1000);
-        }
-        else
-        {
-            this.saveCurrentSnapshot();
-        }
-        this.animate();
-    
-        //On Window Resize
-        $(window).on('resize', (e) => {
-            let xmldoc = $.parseXML(this.toDPF());
-            let $xmlContent = $(xmldoc);
-            let $templatecopied = $xmlContent.find('Template');
-            this.getSides().forEach((sideType, index) => {
-                const side = this.state.sides[sideType];
-                if (side.stage)
+                setTimeout(() =>
                 {
-                    this.createCardStage(side, this.state.currentlayout, this.state.orientation,
-                        $templatecopied.children('CardSides').children('CardSide').eq(index), sideType, true);
-                }
+                    var xmldoc = $.parseXML(content);
+                    let $xml = $(xmldoc);
+        
+                    //TODO Make all functions related async
+                    this.loadDPF($xml).then(() => {
+                        setTimeout(() => {
+                            this.saveCurrentSnapshot();
+                        }, 2500);
+                    });
+                }, 1000);
+            }
+            else
+            {
+                this.saveCurrentSnapshot();
+            }
+            this.animate();
+        
+            //On Window Resize
+            $(window).on('resize', (e) => {
+                let xmldoc = $.parseXML(this.toDPF());
+                let $xmlContent = $(xmldoc);
+                let $templatecopied = $xmlContent.find('Template');
+                this.getSides().forEach((sideType, index) => {
+                    const side = this.state.sides[sideType];
+                    if (side.stage)
+                    {
+                        this.createCardStage(side, this.state.currentlayout, this.state.orientation,
+                            $templatecopied.children('CardSides').children('CardSide').eq(index), sideType, true);
+                    }
+                });
             });
         });
     }
@@ -499,52 +497,41 @@ class CardDesigner extends React.Component {
                             )
                         })}
                     </div>
-                    <div className="row">
-                        <FormTextEntry option='configuration_name' label='create.name'
-                                placeholder='create.name_default' current={this.state.name} maxLength={this.props.maxNameLength}
-                                tooltip={t('create.name_help')} show={this.props.name} />
-            
-                        <div className="col-md-6 row form-group">
-                            <label className="col-md-6 col-form-label">
-                                {t('create.orientation')}
-                            </label>
-                            <div className="col-md-4">
-                                <Form.Control as="select" value={this.state.orientation} onChange={e => this.changeOrientation(e.target.value)}>
-                                    <option value='Landscape'>{t('create.orientation_landscape')}</option>
-                                    <option value='Portrait'>{t('create.orientation_portrait')}</option>
-                                </Form.Control>
-                            </div>
-                        </div>
+                    <div className="row ">
+                        <OverlayTrigger placement="right" overlay={<Tooltip>{t('create.name_help')}</Tooltip>}>
+                            <Form.Group className="col-md-6">
+                                <Form.Label>{t('create.name')}</Form.Label>
+                                <Form.Control type="text" placeholder={t('create.name_default')} value={this.state.name} onChange={e => this.changeName(e.target.value)} />
+                            </Form.Group>
+                        </OverlayTrigger>
+                        <Form.Group className="col-md-6">
+                            <Form.Label>{t('create.orientation')}</Form.Label>
+                            <Form.Control as="select" value={this.state.orientation} onChange={e => this.changeOrientation(e.target.value)}>
+                                <option value='Landscape'>{t('create.orientation_landscape')}</option>
+                                <option value='Portrait'>{t('create.orientation_portrait')}</option>
+                            </Form.Control>
+                        </Form.Group>
                     </div>
             
                     <div className="row">
-                        <div className="col-md-6 row form-group">
-                            <label className="col-md-6 col-form-label">
-                                {t('common.ratio')}
-                            </label>
-                            <div className="col-md-4">
-                                <Form.Control as="select" className="form-control field_type_selector" value={this.state.currentlayout} onChange={e => this.changeLayout(e.target.value)}>
-                                    {GeneralHelper.getLayouts(this.props.enabledCardSizes).map(layout => {
-                                        return(
-                                            <option key={layout.value} value={layout.value}>
-                                                {layout.textv}
-                                                {layout.text &&
-                                                    t(layout.text)
-                                                }
-                                            </option>
-                                        )
-                                    })}
-                                </Form.Control>
-                            </div>
-                        </div>
-                        <div className="col-md-6 row form-group">
-                            <label className="col-md-6 col-form-label">
-                                {t('properties.recto_verso')}
-                            </label>
-                            <div className="col-md-4">
-                                <input type="checkbox" id="is_recto_verso" defaultChecked={this.state.isRectoVerso} />
-                            </div>
-                        </div>
+                        <Form.Group className="col-md-6">
+                            <Form.Label>{t('common.ratio')}</Form.Label>
+                            <Form.Control as="select" className="form-control field_type_selector" value={this.state.currentlayout} onChange={e => this.changeLayout(e.target.value)}>
+                                {GeneralHelper.getLayouts(this.props.enabledCardSizes).map(layout => {
+                                    return(
+                                        <option key={layout.value} value={layout.value}>
+                                            {layout.textv}
+                                            {layout.text &&
+                                                t(layout.text)
+                                            }
+                                        </option>
+                                    )
+                                })}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group className="col-md-6">
+                            <Form.Check type="checkbox" checked={this.state.isRectoVerso} label={t('properties.recto_verso')} onChange={e => this.changeIsRectoVerso(e.target.checked)} />
+                        </Form.Group>
                     </div>
             
                     <Navbar bg="light" expand="lg">
@@ -571,14 +558,14 @@ class CardDesigner extends React.Component {
                                     <NavDivider />
                                     {this.props.enableDownload &&
                                         <NavDropdown title={(<span><FontAwesomeIcon icon={["fas", "cloud-download-alt"]} /> {t('create.download')}</span>)}>
-                                            <NavDropdown.Item href="#download_dpf" onClick={() => this.downloadDPF()}>{t('create.download_template')}</NavDropdown.Item>
-                                            <NavDropdown.Item href="#download_image" onClick={() => this.downloadImage()}>{t('create.download_image')}</NavDropdown.Item>
+                                            <NavDropdown.Item href="#download_dpf" onClick={this.downloadDPF}>{t('create.download_template')}</NavDropdown.Item>
+                                            <NavDropdown.Item href="#download_image" onClick={this.downloadImage}>{t('create.download_image')}</NavDropdown.Item>
                                         </NavDropdown>
                                     }
                                     {this.props.enablePrint &&
                                         <NavDropdown title={(<span><FontAwesomeIcon icon={["fas", "fa-print"]} /> {t('create.print')}</span>)}>
-                                            <NavDropdown.Item href="#print_template" onClick={() => this.printTemplate()}>{t('create.print_template')}</NavDropdown.Item>
-                                            <NavDropdown.Item href="#print_card" onClick={() => this.printCard()}>{t('create.print_card')}</NavDropdown.Item>
+                                            <NavDropdown.Item href="#print_template" onClick={this.printTemplate}>{t('create.print_template')}</NavDropdown.Item>
+                                            <NavDropdown.Item href="#print_card" onClick={this.printCard}>{t('create.print_card')}</NavDropdown.Item>
                                         </NavDropdown>
                                     }
                                 </Nav>
@@ -586,9 +573,10 @@ class CardDesigner extends React.Component {
                         </Container>
                     </Navbar>
 
-                    {this.getSides().map(sideType => {
+                    {/* We should seperate rendering and designer components & logic, then create the stage at renderer side !!*/}
+                    {this.getSides(true).map((sideType, sideIndex) => {
                         return (
-                            <div key={sideType}>
+                            <div key={sideType} style={{display: (sideIndex == 0 || this.state.isRectoVerso) ? 'block' : 'none'}}>
                                 <hr />
                                 <Navbar bg="light" expand="lg">
                                     <Container>
@@ -712,24 +700,26 @@ class CardDesigner extends React.Component {
 
                 {this.state.selectedfield.length > 0 &&
                     <div>
-                        <FieldProperties show={this.state.show_field} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field: false})} onSubmit={this.updateField} />
-                        <ConditionalRendering show={this.state.show_conditionalrendering} entries={this.state.selectedfield[0].options.conditionalRenderingEntries} onClose={() => this.setState({show_conditionalrendering: false})} onSubmit={entries => this.updateField({conditionalRenderingEntries: entries})} />
-                        <LabelProperties show={this.state.show_field_label} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_label: false})} onSubmit={this.updateField} />
-                        <UrlLinkProperties show={this.state.show_field_urllink} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_urllink: false})} onSubmit={this.updateField} />
-                        <PictureProperties show={this.state.show_field_picture} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_picture: false})} onSubmit={this.updateField} />
-                        <BarcodeProperties show={this.state.show_field_barcode} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_barcode: false})} onSubmit={this.updateField} />
-                        <QrCodeProperties show={this.state.show_field_qrcode} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_qrcode: false})} onSubmit={this.updateField} />
-                        <Pdf417Properties show={this.state.show_field_pdf417} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_pdf417: false})} onSubmit={this.updateField} />
-                        <DataMatrixProperties show={this.state.show_field_datamatrix} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_datamatrix: false})} onSubmit={this.updateField} />
-                        <RectangleProperties show={this.state.show_field_rectangle} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_rectangle: false})} onSubmit={this.updateField} />
-                        <CircleProperties show={this.state.show_field_circle} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_circle: false})} onSubmit={this.updateField} />
+                        <FieldProperties show={this.state.show_field} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field: false})} onSubmit={this.updateField} />
+                        <ConditionalRendering show={this.state.show_conditionalrendering} editor={this} entries={this.state.selectedfield[0].options.conditionalRenderingEntries} onClose={() => this.setState({show_conditionalrendering: false})} onSubmit={entries => this.updateField({conditionalRenderingEntries: entries})} />
+                        <LabelProperties show={this.state.show_field_label} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_label: false})} onSubmit={this.updateField} />
+                        <UrlLinkProperties show={this.state.show_field_urllink} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_urllink: false})} onSubmit={this.updateField} />
+                        <PictureProperties show={this.state.show_field_picture} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_picture: false})} onSubmit={this.updateField} />
+                        <BarcodeProperties show={this.state.show_field_barcode} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_barcode: false})} onSubmit={this.updateField} />
+                        <QrCodeProperties show={this.state.show_field_qrcode} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_qrcode: false})} onSubmit={this.updateField} />
+                        <Pdf417Properties show={this.state.show_field_pdf417} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_pdf417: false})} onSubmit={this.updateField} />
+                        <DataMatrixProperties show={this.state.show_field_datamatrix} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_datamatrix: false})} onSubmit={this.updateField} />
+                        <RectangleProperties show={this.state.show_field_rectangle} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_rectangle: false})} onSubmit={this.updateField} />
+                        <CircleProperties show={this.state.show_field_circle} editor={this} field={this.state.selectedfield[0].options} onClose={() => this.setState({show_field_circle: false})} onSubmit={this.updateField} />
                     </div>
                 }
-                <BackgroundProperties show={this.state.show_background} background={this.state.sides[this.state.selectedside].options} onClose={() => this.setState({show_background: false})} onSubmit={background => this.updateBackground(this.state.selectedside, background)} />
-                <PrintCard show={this.state.show_printcard} onClose={() => this.setState({show_printcard: false})} onSubmit={this.printCardConfirm} />                            
-                <AddFieldFromList show={this.state.show_addfieldfromlist} fieldlist={this.props.fieldlist} onClose={() => this.setState({show_addfieldfromlist: false})} onSubmit={this.addFieldFromListConfirm} />
-                <GridSettings show={this.state.show_gridsettings} grid={this.state.grid} onClose={() => this.setState({show_gridsettings: false})} onSubmit={this.editGridConfirm} />
-                <History show={this.state.show_history} snapshots={this.state.snapshots.history} onClose={() => this.setState({show_history: false})} onSubmit={this.loadSnapshot} />
+                <BackgroundProperties show={this.state.show_background} editor={this} background={this.state.sides[this.state.selectedside].options} onClose={() => this.setState({show_background: false})} onSubmit={background => this.updateBackground(this.state.selectedside, background)} />
+                {this.state.show_printcard &&
+                    <PrintCard show={this.state.show_printcard} editor={this} fields={this.getAllNamedFields()} onClose={() => this.setState({show_printcard: false})} onSubmit={this.printCardConfirm} />                            
+                }
+                <AddFieldFromList show={this.state.show_addfieldfromlist} editor={this} fieldlist={this.props.fieldlist} onClose={() => this.setState({show_addfieldfromlist: false})} onSubmit={this.addFieldFromListConfirm} />
+                <GridSettings show={this.state.show_gridsettings} editor={this} grid={this.state.grid} onClose={() => this.setState({show_gridsettings: false})} onSubmit={this.editGridConfirm} />
+                <History show={this.state.show_history} editor={this} snapshots={this.state.snapshots.history} onClose={() => this.setState({show_history: false})} onSubmit={this.loadSnapshot} />
             </div>
         );
     }
