@@ -111,6 +111,14 @@ function onCardMouseMove(event, stage, topRuler, leftRuler)
         stage.selectarea.drawRect(areaxpos, areaypos, areawidth, areaheight);
         stage.selectarea.endFill();
     }
+
+    // We forward the event to selected fields
+    // Mainly to handle resize/rotate as such events arise out of the field area
+    if (this.state.selectedfield.length > 0) {
+        this.state.selectedfield.forEach(field => {
+            onDragMove.call(this, event, field, field.sideType);
+        });
+    }
 }
 
 async function onCardKeyDown(event)
