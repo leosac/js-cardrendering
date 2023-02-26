@@ -1,17 +1,22 @@
 const path = require('path');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './jscardrendering.js',
+  entry: './src/lib/index.js',
   output: {
-    filename: 'main.js',
+    filename: 'cardrendering.js',
+    library: 'cardrendering',
+    libraryTarget: 'umd',
     path: path.resolve(__dirname, 'dist'),
   },
-  module: {
-    rules: [
-      {
-        test: /src\/locales\/*\/.json/,
-        loader: "@alienfast/i18next-loader",
-      }
-    ],
-  }
+  plugins: [
+    new ESLintPlugin(),
+    new HtmlWebpackPlugin({
+      title: 'JS Card Rendering',
+      template: 'example/index.html',
+      scriptLoading: 'blocking',
+      inject: false
+    })
+  ],
 };

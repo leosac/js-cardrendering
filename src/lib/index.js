@@ -3,10 +3,8 @@
  *
  * @license GNU LGPL version 3
  **/
-import CardDesigner from "./components/CardDesigner";
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
+import CardRenderer from "./cardrenderer";
+import CardHelper from "./helpers";
+import { hexColorToSignedNumber, decimalToHexColor, a2hex, hex2a } from "./convert";
 
-library.add(fas);
-
-export { CardDesigner };
+export { CardRenderer, CardHelper, hexColorToSignedNumber, decimalToHexColor, a2hex, hex2a };

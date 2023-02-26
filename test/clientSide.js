@@ -1,7 +1,7 @@
 //Import test scripts
-import GeneralHelperTests from './clientSide/GeneralHelper';
+import CardHelperTests from './clientSide/CardHelper';
 import convertTests from './clientSide/edit/convert';
 
 //Start test scripts
-GeneralHelperTests();
+CardHelperTests();
 convertTests();

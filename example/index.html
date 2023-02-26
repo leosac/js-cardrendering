@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <%= htmlWebpackPlugin.tags.headTags %>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      .column {
+        float: left;
+        width: 50%;
+        padding: 10px;
+      }
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <h1><%= htmlWebpackPlugin.options.title %></h1>
+    <h3>This component render a printing template. It can be used as the core visual engine for a template editor or to generate bitmaps for further printing.</h3>
+
+    <%= htmlWebpackPlugin.tags.bodyTags %>
+
+    <div class="row">
+      <div class="column">
+        <canvas id="card" />
+        <script>
+          const renderer = new cardrendering.CardRenderer({
+            canvas: document.getElementById('card'),
+            grid: {
+              ruler: true
+            }
+          });
+
+          function loadTemplate(tpl = undefined) {
+            console.log("Loading template ", tpl);
+            renderer.createCardStage('cr80', 'Landscape', tpl);
+            renderer.animate();
+          }
+
+          function loadTemplate1() {
+            loadTemplate({
+              background: {
+                color: '#ff0000'
+              },
+              fields: [
+                {
+                  type: 'label',
+                  autoSize: true,
+                  color: '#000000',
+                  value: 'My first card',
+                  width: 46,
+                  height: 18,
+                  x: 80,
+                  y: 50
+                },
+                {
+                  type: 'label',
+                  autoSize: true,
+                  color: '#000000',
+                  value: 'Enjoy!',
+                  x: 80,
+                  y: 70
+                },
+                {
+                  type: 'qrcode',
+                  value: 'https://www.leosac.com',
+                  width: 132,
+                  height: 132,
+                  x: 250,
+                  y: 100,
+                }
+              ]
+            });
+          }
+
+          function loadTemplate2() {
+            loadTemplate({
+              background: {
+                color: '#0018ff'
+              },
+              fields: [
+                {
+                  type: 'rectangle',
+                  color: '#ffffff',
+                  borderWidth: 1,
+                  borderColor: '#000000',
+                  width: 75,
+                  height: 75,
+                  x: 180,
+                  y: 90
+                },
+                {
+                  type: 'circle',
+                  color: '#ffffff',
+                  borderWidth: 1,
+                  borderColor: '#000000',
+                  width: 75,
+                  height: 75,
+                  x: 40,
+                  y: 15
+                },
+                {
+                  type: 'circle',
+                  color: '#ffffff',
+                  borderWidth: 1,
+                  borderColor: '#000000',
+                  width: 75,
+                  height: 75,
+                  x: 325,
+                  y: 180
+                }
+              ]
+            });
+          }
+
+          loadTemplate();
+        </script>
+      </div>
+      <div class="column">
+        <p>Demo</p>
+        <p><button onclick="loadTemplate()">Empty card</button></p>
+        <p><button onclick="loadTemplate1()">Template 1: Red card with Label and QR Code</button></p>
+        <p><button onclick="loadTemplate2()">Template 2: Blue card with Shapes</button></p>
+      </div>
+    </div>
+
+  </body>
+</html>

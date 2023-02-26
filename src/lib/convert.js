@@ -3,24 +3,6 @@
  *
  * @license GNU LGPL version 3
  **/
-function pixelToUnit(pixel)
-{
-    if (this.state.cardwidth_unit === this.state.cardwidth)
-        return pixel;
-
-    const ratio = this.state.cardwidth_unit / this.state.cardwidth;
-    return Math.round(pixel * ratio * 10000) / 10000;
-}
-
-function unitToPixel(unit)
-{
-    if (this.state.cardwidth_unit === this.state.cardwidth)
-        return unit;
-
-    const ratio = this.state.cardwidth_unit / this.state.cardwidth;
-    return Math.round(unit / ratio);
-}
-
 function decimalToHexColor(number)
 {
     if (!Number.isFinite(number))
@@ -96,12 +78,12 @@ function a2hex(str)
 
 function inchToPixel(value){
     return (value * 96);
-};
+}
 
 function pixelToInch(value){
     return (value / 96);
 }
 
 export {
-    pixelToUnit, unitToPixel, decimalToHexColor, hexColorToSignedNumber, hex2a, a2hex, inchToPixel, pixelToInch
+    decimalToHexColor, hexColorToSignedNumber, hex2a, a2hex, inchToPixel, pixelToInch
 }

@@ -3,7 +3,7 @@
  *
  * @license GNU LGPL version 3
  **/
-const GeneralHelper = {};
+const CardHelper = {};
 
 function getRandomHex()
 {
@@ -15,7 +15,7 @@ function getRandomHex()
  * Return len "random" hex bytes as a string.
  * @param len
  */
-GeneralHelper.getRandomHex = function (len)
+CardHelper.getRandomHex = function (len)
 {
     let s = '';
     for (let i = 0; i < len; ++i)
@@ -23,12 +23,12 @@ GeneralHelper.getRandomHex = function (len)
     return s;
 };
 
-GeneralHelper.isHex = function (obj)
+CardHelper.isHex = function (obj)
 {
     return /^[0-9A-F]+$/i.test(obj) === true;
 };
 
-GeneralHelper.getLayouts = function(enabledCardSizes) {
+CardHelper.getLayouts = function(enabledCardSizes) {
     let layouts = [];
     if (enabledCardSizes.cr80)
         layouts.push({value: 'cr80', text: 'create.cr80'});
@@ -47,11 +47,11 @@ GeneralHelper.getLayouts = function(enabledCardSizes) {
     return layouts;
 }
 
-GeneralHelper.getFontFamilies = function() {
+CardHelper.getFontFamilies = function() {
     return ['Agency FB', 'Algerian', 'Arial', 'Arial Rounded MT', 'Arimo', 'Axure Handwriting', 'Baskerville Old Face', 'Bauhaus 93', 'Bell MT', 'Berlin Sans FB', 'Bernard MT', 'Blackadder ITC', 'Bodoni MT', 'Bodoni MT Poster', 'Book Antiqua', 'Bookman Old Style', 'Bookshelf Symbol 7', 'Bradley Hand ITC', 'Britannic', 'Broadway', 'Brush Script MT', 'Buxton Sketch', 'Calibri', 'Californian FB', 'Calisto MT', 'Cambria', 'Cambria Math', 'Candara', 'Castellar', 'Centaur', 'Century', 'Century Gothic', 'Century Schoolbook', 'Chiller', 'Colonna MT', 'Comic Sans MS', 'Consolas', 'Constantia', 'Cooper', 'Copperplate Gothic', 'Corbel', 'Courier New', 'Curlz MT', 'DejaVu Sans', 'DejaVu Sans Mono', 'DejaVu Serif', 'Edwardian Script ITC', 'Elephant', 'Engravers MT', 'Eras ITC', 'Felix Titling', 'Footlight MT', 'Forte', 'Franklin Gothic', 'Franklin Gothic Book', 'Freestyle Script', 'French Script MT', 'Gabriola', 'Garamond', 'Gentium Basic', 'Gentium Book Basic', 'Georgia', 'Gigi', 'Gill Sans', 'Gill Sans MT', 'Gloucester MT', 'Goudy Old Style', 'Goudy Stout', 'Haettenschweiler', 'Harlow Solid', 'Harrington', 'High Tower Text', 'Impact', 'Imprint MT Shadow', 'Informal Roman', 'Jokerman', 'Juice ITC', 'Kristen ITC', 'Kunstler Script', 'Latin', 'Lucida Bright', 'Lucida Calligraphy', 'Lucida Console', 'Lucida Fax', 'Lucida Handwriting', 'Lucida Sans', 'Lucida Sans Typewriter', 'Lucida Sans Unicode', 'Magneto', 'Maiandra GD', 'Matura MT Script Capitals', 'Microsoft MHei', 'Microsoft NeoGothic', 'Microsoft Sans Serif', 'Mistral', 'Modern No. 20', 'Monotype Corsiva', 'MS Outlook', 'MS Reference Sans Serif', 'MS Reference Specialty', 'MT Extra', 'Niagara Engraved', 'Niagara Solid', 'OCR A', 'Old English Text MT', 'Onyx', 'OpenSymbol', 'Palace Script MT', 'Palatino Linotype', 'Papyrus', 'Parchment', 'Perpetua', 'Perpetua Titling MT', 'Playbill', 'Poor Richard', 'Pristina', 'Rage', 'Ravie', 'Rockwell', 'Script MT', 'Segoe Marker', 'Segoe MDL2 Assets', 'Segoe Print', 'Segoe Script', 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe WP', 'Showcard Gothic', 'Sitka Banner', 'Sitka Display', 'Sitka Heading', 'Sitka Small', 'Sitka Subheading', 'Sitka Text', 'SketchFlow Print', 'Snap ITC', 'STENCIL', 'Symbol', 'Tahoma', 'Tempus Sans ITC', 'Times New Roman', 'Trebuchet MS', 'Tw Cen MT', 'Verdana', 'Viner Hand ITC', 'Vivaldi', 'Vladimir Script', 'Webdings', 'Wingdings', 'Wingdings 2', 'Wingdings 3'];
 }
 
-GeneralHelper.getDataMatrixSizeIdx = function(t) {
+CardHelper.getDataMatrixSizeIdx = function(t) {
     return [
         { value: -2, label: t('properties.prop_datamatrix_autoSquare')},
         { value: -3, label: t('properties.prop_datamatrix_autoRectangle')},
@@ -88,7 +88,7 @@ GeneralHelper.getDataMatrixSizeIdx = function(t) {
     ];
 }
 
-GeneralHelper.getColorInt = function(hexColor) {
+CardHelper.getColorInt = function(hexColor) {
     if (hexColor === 'transparent') {
         return -1;
     } else if (hexColor !== '') {
@@ -97,4 +97,42 @@ GeneralHelper.getColorInt = function(hexColor) {
     return hexColor;
 }
 
-export default GeneralHelper;
+//This function check if used version is the required version
+//Used to enforce strict format compatibility
+CardHelper.checkVersion = function(current, required) {
+
+    //If no current version is set, we set as "current version = required version"
+    if (!current)
+        return (0);
+    let x=current.split('.').map(e=> parseInt(e));
+    let y=required.split('.').map(e=> parseInt(e));
+    let z = "";
+
+    for(let i=0;i<x.length;i++) {
+        if(x[i] === y[i]) {
+            z+="e";
+        } else
+        if(x[i] > y[i]) {
+            z+="m";
+        } else {
+            z+="l";
+        }
+    }
+    if (!z.match(/[l|m]/g)) {
+      return 0;
+    } else if (z.split('e').join('')[0] === "m") {
+      return 1;
+    } else {
+      return -1;
+    }
+}
+
+CardHelper.export_default = function(value, defv)
+{
+    if (value === undefined || value === '')
+        return defv;
+
+    return value;
+}
+
+export default CardHelper;

@@ -1,5 +1,5 @@
 var assert = require('assert');
-import * as convert from '../../../src/js/edit/convert';
+import * as convert from '../../src/lib/edit/convert';
 
 //Exported function
 export default function convertTests(){

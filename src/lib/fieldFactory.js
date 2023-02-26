@@ -4,10 +4,11 @@
  * @license GNU LGPL version 3
  **/
 import * as PIXI from "pixi.js-legacy";
+import { createCanvas } from "canvas";
 import bwipjs from 'bwip-js';
 import QRCode from 'qrcode';
 import { hexColorToSignedNumber } from "./convert";
-import GeneralHelper from '../GeneralHelper';
+import CardHelper from './helpers';
 
 function createTextField(options)
 {
@@ -234,7 +235,7 @@ async function createQRCodeField(options)
 function createPDF417Field(options)
 {
     options.type = 'pdf417';
-    let canvas = document.createElement('canvas');
+    let canvas = createCanvas(100, 30);
     try {
         bwipjs.toCanvas(canvas, {
             bcid:        'pdf417',          // Barcode type
@@ -269,9 +270,9 @@ function createPDF417Field(options)
 function createDatamatrixField(options)
 {
     options.type = 'dataMatrix';
-    options.SizeIdx = Number(options.SizeIdx);
-    options.Scheme = Number(options.Scheme);
-    let canvas = document.createElement('canvas');
+    options.sizeIdx = Number(options.sizeIdx);
+    options.scheme = Number(options.scheme);
+    let canvas = createCanvas(150, 150);
     try {
         let bwOptions = {
             text:        options.value,   // Text to encode
@@ -281,42 +282,42 @@ function createDatamatrixField(options)
             barcolor: hexColorToSignedNumber(options.color), //Color
         };
 
-        if (options.Scheme === 0)
+        if (options.scheme === 0)
         {
             //ASCII
-            if (options.SizeIdx === -2 || (options.SizeIdx >= 0 && options.SizeIdx <= 23) )
+            if (options.sizeIdx === -2 || (options.sizeIdx >= 0 && options.sizeIdx <= 23) )
             {
                 //Square
                 bwOptions.bcid = "datamatrix";
                 bwOptions.format = "square";
-                if (options.SizeIdx !== -2)
-                    bwOptions.version = GeneralHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.SizeIdx).label;
+                if (options.sizeIdx !== -2)
+                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
             }
-            else if (options.SizeIdx === -3 || (options.SizeIdx >= 24 && options.SizeIdx <= 29) )
+            else if (options.sizeIdx === -3 || (options.sizeIdx >= 24 && options.sizeIdx <= 29) )
             {
                 //Rectangle
                 bwOptions.format = "rectangle";
                 bwOptions.bcid = "datamatrixrectangular";
-                if (options.SizeIdx !== -3)
-                    bwOptions.version = GeneralHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.SizeIdx).label;
+                if (options.sizeIdx !== -3)
+                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
             }
         }
-        else if (options.Scheme === 6)
+        else if (options.scheme === 6)
         {
             //Faire un controle des datas pour voir si l input est valide afin de pas faire crash l appli
             //ASCII GS1
             bwOptions.bcid = "gs1datamatrix";
-            if (options.SizeIdx === -2 || (options.SizeIdx >= 0 && options.SizeIdx <= 23) )
+            if (options.sizeIdx === -2 || (options.sizeIdx >= 0 && options.sizeIdx <= 23) )
             {
                 bwOptions.format = "square";
-                if (options.SizeIdx !== -2)
-                    bwOptions.version = GeneralHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.SizeIdx).label;
+                if (options.sizeIdx !== -2)
+                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
             }
-            else if (options.SizeIdx === -3 || (options.SizeIdx >= 24 && options.SizeIdx <= 29) )
+            else if (options.sizeIdx === -3 || (options.sizeIdx >= 24 && options.sizeIdx <= 29) )
             {
                 bwOptions.format = "rectangle";
-                if (options.SizeIdx !== -3)
-                    bwOptions.version = GeneralHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.SizeIdx).label;
+                if (options.sizeIdx !== -3)
+                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
             }   
         }
 

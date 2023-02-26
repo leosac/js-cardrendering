@@ -1,60 +1,33 @@
 {
-  "name": "jscardrendering",
-  "version": "1.0.0",
-  "description": "Create Card Templates",
-  "main": "jscardrendering.js",
+  "name": "cardrendering",
+  "version": "1.1.0",
+  "description": "Card Rendering engine for CR-80 cards and more",
+  "main": "dist/cardrendering.js",
   "directories": {
     "example": "example"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.3.0",
-    "@fortawesome/free-solid-svg-icons": "^6.3.0",
-    "@fortawesome/react-fontawesome": "^0.2.0",
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@wojtekmaj/react-datetimerange-picker": "^4.2.0",
-    "bootstrap": "^4.6.0",
     "bwip-js": "^3.2.2",
     "canvas": "^2.11.0",
-    "cropper": "^4.1.0",
     "esm": "^3.2.25",
-    "i18next": "^22.4.9",
-    "jquery": "^3.6.3",
-    "jquery-ui": "^1.13.2",
-    "moment": "^2.29.4",
     "npm-check-updates": "^16.6.3",
     "pixi.js-legacy": "^7.1.2",
-    "qrcode": "^1.5.1",
-    "react": "^18.2.0",
-    "react-bootstrap": "^1.6.6",
-    "react-color": "^2.19.3",
-    "react-contexify": "^6.0.0",
-    "react-dom": "^18.2.0",
-    "react-filerobot-image-editor": "^4.3.8",
-    "react-i18next": "^12.1.5",
-    "react-scripts": "^5.0.1"
+    "qrcode": "^1.5.1"
   },
   "devDependencies": {
-    "@alienfast/i18next-loader": "^2.0.1",
     "@babel/core": "^7.20.12",
     "babel-loader": "^9.1.2",
+    "eslint": "^8.34.0",
+    "eslint-webpack-plugin": "^4.0.0",
     "global-jsdom": "8.7.0",
+    "html-webpack-plugin": "^5.5.0",
     "jsdom": "21.1.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
