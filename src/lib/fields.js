@@ -85,6 +85,10 @@ class Fields {
             }
             this.cardside.graphics.card.addChild(field);
             this.cardside.sortByZIndex();
+
+            if (this.cardside.options.onFieldAdded) {
+                this.cardside.options.onFieldAdded(field);
+            }
         }
     }
 
@@ -364,10 +368,10 @@ class Fields {
     moveField(field, mx, my, skipStepAlign) {
         if (skipStepAlign !== true) {
             // Align to step
-            if ((mx % this.cardside.grid.step) !== 0) {
+            if ((mx % this.cardside.data.grid.step) !== 0) {
                 mx = 0;
             }
-            if ((my % this.cardside.grid.step) !== 0) {
+            if ((my % this.cardside.data.grid.step) !== 0) {
                 my = 0;
             }
         }
@@ -524,8 +528,8 @@ class Fields {
             field.selected = this.createSelectedSprite( field);
             field.addChild(field.selected);
             this.cardside.data.fields.selected.push(field);
-            if (this.cardside.options.onSelectionChange) {
-                this.cardside.options.onSelectionChange(this.cardside.data.fields.selected);
+            if (this.cardside.options.onSelectionChanged) {
+                this.cardside.options.onSelectionChanged(this.cardside.data.fields.selected);
             }
         }
     }
@@ -542,6 +546,9 @@ class Fields {
                     this.unselectField(f, false)
                 });
                 this.cardside.data.fields.selected = [];
+                if (this.cardside.options.onSelectionChanged) {
+                    this.cardside.options.onSelectionChanged(this.cardside.data.fields.selected);
+                }
             }
         } else {
             field.removeChild(field.selected);
@@ -555,8 +562,8 @@ class Fields {
                     } else {
                         this.cardside.data.fields.selected = [];
                     }
-                    if (this.cardside.options.onSelectionChange) {
-                        this.cardside.options.onSelectionChange(this.cardside.data.fields.selected);
+                    if (this.cardside.options.onSelectionChanged) {
+                        this.cardside.options.onSelectionChanged(this.cardside.data.fields.selected);
                     }
                 }
             }

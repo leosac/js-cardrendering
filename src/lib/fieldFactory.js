@@ -98,9 +98,10 @@ function createTextField(options)
         }
 
         label = new PIXI.Graphics();
-        if (options.borderWidth > 0)
+        const borderWidth = Number(options.borderWidth);
+        if (borderWidth > 0)
         {
-            label.lineStyle(options.borderWidth, options.borderColor, 1);
+            label.lineStyle(borderWidth, hexColorToSignedNumber(options.borderColor), 1);
         }
         let alpha = 1;
         if (options.colorFill === -1)
@@ -162,9 +163,10 @@ function createUrlLinkField(options)
         const height = options.autoSize ? text.height : options.height;
 
         label = new PIXI.Graphics();
-        if (options.borderWidth > 0)
+        const borderWidth = Number(options.borderWidth);
+        if (borderWidth > 0)
         {
-            label.lineStyle(options.borderWidth, options.borderColor, 1);
+            label.lineStyle(borderWidth, hexColorToSignedNumber(options.borderColor), 1);
         }
         let alpha = 1;
         if (options.colorFill === -1)
@@ -199,12 +201,11 @@ function createBarcodeField(options)
     let canvas = createCanvas(100, 30);
     try {
         bwipjs.toCanvas(canvas, {
-            bcid:        'qrcode',
-            text:        options.fontFamily.toLowerCase(),
+            bcid:        options.fontFamily.toLowerCase(),
+            text:        options.value,
             includetext: false,
             backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-            barcolor: hexColorToSignedNumber(options.color),
-            eclevel: options.ecLevel
+            barcolor: hexColorToSignedNumber(options.color)
         });
         const sprite = PIXI.Sprite.from(canvas.toDataURL('image/png'));
     
@@ -224,7 +225,7 @@ function createBarcodeField(options)
 
     } catch (e) {
         console.log(e);
-        console.error("jscardrendering : Error during qrcode generation");
+        console.error("jscardrendering : Error during barcode generation");
     }
 }
 
@@ -385,9 +386,10 @@ function createFingerprintField(options)
         sprite.width = options.width;
         sprite.height = options.height;
 
-        if (options.borderWidth > 0)
+        const borderWidth = Number(options.borderWidth);
+        if (borderWidth > 0)
         {
-            box.lineStyle(options.borderWidth, hexColorToSignedNumber(options.borderColor), 1);
+            box.lineStyle(borderWidth, hexColorToSignedNumber(options.borderColor), 1);
         }
         if (options.rotation > 0)
         {
@@ -448,9 +450,10 @@ function createPictureField(options, createOpt)
         options.width = sprite.width;
         options.height = sprite.height;
 
-        if (options.borderWidth > 0)
+        const borderWidth = Number(options.borderWidth);
+        if (borderWidth > 0)
         {
-            box.lineStyle(options.borderWidth, hexColorToSignedNumber(options.borderColor), 1);
+            box.lineStyle(borderWidth, hexColorToSignedNumber(options.borderColor), 1);
         }
         box.beginFill(0, 0);
         box.drawRect(0, 0, options.width, options.height);
@@ -484,7 +487,7 @@ function createRectangleShapeField(options)
     options.type = 'rectangle';
     const rectangle = new PIXI.Graphics();
     rectangle.options = options;
-    rectangle.lineStyle(options.borderWidth, hexColorToSignedNumber(options.borderColor));
+    rectangle.lineStyle(Number(options.borderWidth), hexColorToSignedNumber(options.borderColor));
     rectangle.beginFill(hexColorToSignedNumber(options.color));
     rectangle.drawRect(0, 0, options.width, options.height);
     rectangle.endFill();

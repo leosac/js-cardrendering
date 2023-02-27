@@ -11,14 +11,14 @@ class Grid {
     }
 
     drawGrid() {
-        const width = Math.ceil(this.cardside.cardwidth / this.cardside.grid.columns);
-        const height = Math.ceil(this.cardside.cardheight / this.cardside.grid.rows);
+        const width = Math.ceil(this.cardside.data.card.width / this.cardside.data.grid.columns);
+        const height = Math.ceil(this.cardside.data.card.height / this.cardside.data.grid.rows);
         if (width > 0 && height > 0)
         {
             this.cardside.graphics.grid = new PIXI.Container();
 
-            for (var i = 0; i < this.cardside.grid.rows; i++) {
-                for (var j = 0; j < this.cardside.grid.columns; j++) {
+            for (var i = 0; i < this.cardside.data.grid.rows; i++) {
+                for (var j = 0; j < this.cardside.data.grid.columns; j++) {
                     let cell = new PIXI.Graphics();
                     cell.lineStyle(1, 0xaeaeae, 1);
                     cell.drawRect(0, 0, width, height);
