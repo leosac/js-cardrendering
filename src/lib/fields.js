@@ -105,9 +105,11 @@ class Fields {
                 options.x = Math.round(position.x);
                 options.y = Math.round(position.y);
             }
+        } else {
+            position = {x: 0, y: 0};
         }
 
-        if (options.fieldtype === 'label') {
+        if (options.type === 'label') {
             field = createTextField({
                 useMacros: false,
                 value: 'Label',
@@ -131,7 +133,7 @@ class Fields {
                 rotation: 0,
                 ...options
             });
-        } else if (options.fieldtype === 'picture') {
+        } else if (options.type === 'picture') {
             field = createPictureField({
                 useMacros: false,
                 value: this.blankimg,
@@ -145,21 +147,21 @@ class Fields {
                 rotation: 0,
                 ...options
             }, createOpt);
-        } else if (options.fieldtype === 'barcode') {
+        } else if (options.type === 'barcode') {
             field = createBarcodeField({
                 useMacros: false,
                 value: '012345',
-                fontFamily: 'Code39',
-                fontSize: 64,
-                width: 75,
-                height: 75,
+                fontFamily: 'code39',
+                width: 100,
+                height: 30,
+                color: 0x000000,
                 x: Math.round(position.x),
                 y: Math.round(position.y),
                 zIndex: 0,
                 rotation: 0,
                 ...options
             });
-        } else if (options.fieldtype === 'pdf417') {
+        } else if (options.type === 'pdf417') {
             field = createPDF417Field({
                 useMacros: false,
                 value: '012345',
@@ -173,7 +175,7 @@ class Fields {
                 rotation: 0,
                 ...options
             });
-        } else if (options.fieldtype === 'dataMatrix') {
+        } else if (options.type === 'dataMatrix') {
             field = createDatamatrixField({
                 useMacros: false,
                 value: '012345',
@@ -188,20 +190,21 @@ class Fields {
                 rotation: 0,
                 ...options
             });
-        } else if (options.fieldtype === 'qrcode') {
-            field = await createQRCodeField({
+        } else if (options.type === 'qrcode') {
+            field = createQRCodeField({
                 useMacros: false,
                 value: 'https://www.leosac.com',
                 ecLevel: 'M',
                 width: 132,
                 height: 132,
+                color: 0x000000,
                 x: Math.round(position.x),
                 y: Math.round(position.y),
                 zIndex: 0,
                 rotation: 0,
                 ...options
             });
-        } else if (options.fieldtype === 'rectangle') {
+        } else if (options.type === 'rectangle') {
             field = createRectangleShapeField({
                 useMacros: false,
                 color: 0xffffff,
@@ -215,7 +218,7 @@ class Fields {
                 rotation: 0,
                 ...options
             });
-        } else if (options.fieldtype === 'circle') {
+        } else if (options.type === 'circle') {
             field = createCircleShapeField({
                 useMacros: false,
                 color: 0xffffff,
@@ -229,7 +232,7 @@ class Fields {
                 rotation: 0,
                 ...options
             });
-        } else if (options.fieldtype === 'fingerprint') {
+        } else if (options.type === 'fingerprint') {
             field = createFingerprintField({
                 useMacros: false,
                 autoRequest: false,
@@ -243,7 +246,7 @@ class Fields {
                 ...options
             });
         }
-        else if (options.fieldtype === 'urllink') {
+        else if (options.type === 'urllink') {
             field = createUrlLinkField({
                 useMacros: false,
                 value: 'https://leosac.com/',
