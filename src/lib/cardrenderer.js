@@ -496,6 +496,22 @@ class CardRenderer {
         canvasDOM.height = canvasDOM.height * oldscale;
         return resizedCanvas;
     }
+
+    toJson() {
+        const tpl = { fields: [] };
+        if (this.graphics.card) {
+            tpl.background = this.graphics.card.options.background
+            if (this.graphics.card.children && this.graphics.card.children.length > 0) {
+                for (let i = 0; i < this.graphics.card.children.length; ++i) {
+                    let child = this.graphics.card.getChildAt(i);
+                    if (child.options !== undefined && child.options.type !== undefined) {
+                        tpl.fields.push(child.options);
+                    }
+                }
+            }
+        }
+        return tpl;
+    }
 }
 
 export default CardRenderer;
