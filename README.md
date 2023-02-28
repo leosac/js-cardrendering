@@ -1,6 +1,8 @@
-# JS-CardRendering
+# JS-CardRendering [![Build Status](https://github.com/leosac/js-cardrendering/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/leosac/js-cardrendering/actions/workflows/node.js.yml)
 JS-CardRendering is a javascript library used to render card printing templates.
 For node.js and web browsers.
+
+![CardRendering Sample](https://github.com/leosac/js-cardrendering/blob/master/example/sample-cardrendering-red.png?raw=true)
 
 ## Usage
 ```js
