@@ -1,38 +1,71 @@
-# JsCardRendering
-
-JS-CardRendering is a React component used to make card printing templates.
-It works with node.js and web browsers (one packaged with webpack).
-
-## Pre-Required
-
-You need React >= 18
-
-## Installation
-
-`npm install @leosac/js-cardrendering --save`
+# JS-CardRendering
+JS-CardRendering is a javascript library used to render card printing templates.
+For node.js and web browsers.
 
 ## Usage
-
 ```js
-import { CardDesigner } from "@leosac/js-cardrendering";
-
-/* Import bootstrap css if missing */
-import "bootstrap/dist/css/bootstrap.min.css";
-/* Import barcode fonts if missing */
-import "./css/barcode-fonts.css";
-
-const App = () => (
-  <CardDesigner enableDownload="true" enablePrint="true" />
-);
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+const tpl = {
+  background: {
+    color: '#ff0000'
+  },
+  fields: [
+    {
+      type: 'label',
+      autoSize: true,
+      color: '#000000',
+      value: 'My first card',
+      width: 46,
+      height: 18,
+      x: 80,
+      y: 50
+    },
+    {
+      type: 'qrcode',
+      value: 'https://www.leosac.com',
+      width: 132,
+      height: 132,
+      x: 250,
+      y: 100,
+    }
+  ]
+};
 ```
 
-If you correctly made the previous steps, the package is now installed in your project.
+### Node
+`npm install @leosac/cardrendering --save`
+
+```js
+import { createCanvas } from "canvas";
+import { CardRenderer } from "@leosac/cardrendering";
+
+const renderer = new CardRenderer({
+  canvas: createCanvas(445, 280),
+  grid: {
+    ruler: true
+  }
+});
+renderer.createCardStage('cr80', 'landscape', tpl);
+renderer.animate();
+```
+
+### Web Browser
+```html
+<script type="text/javascript" src="cardrendering.js" />
+<canvas id="card"></canvas>
+```
+
+```js
+const renderer = new cardrendering.CardRenderer({
+  canvas: document.getElementById('card'),
+  grid: {
+    ruler: true
+  }
+});
+renderer.createCardStage('cr80', 'landscape', tpl);
+renderer.animate();
+```
 
 ## From source
-
 ```bash
 git clone https://github.com/leosac/js-cardrendering.git
 cd "js-cardrendering"
@@ -44,11 +77,6 @@ npm install
 npm run build
 ```
 
-### Start in development mode
-```bash
-npm start
-```
-
 ### Run tests
 ```bash
 npm run test
@@ -56,62 +84,62 @@ npm run test
 
 ## Parameters
 
-Several properties can be optionally passed to the component.
+### CardRenderer constructor
 
-There is two parameters :
-
-    - cb_AtEdit [`Function`] (`Param 1: Card Template, Param 2: Snapshot`: Function called at each field edition (created, removed, resized, moved...)
-    - content [`Object`]: Card Template (more informations inside "Load Card Template" section)
-    - draggableFields [`Array`] (`{name : String, default_value: String}`): List of draggable fields
-    - formatVersion [`String`] (`Default: Undefined`): Force a specific format version for the output (default to latest version)
-    - enabledCardSizes [`Object` : Select cards templates you want to authorize. (more informations inside "Card Templates" section)
-    - enableDownload [`Boolean`] (`Default: false`): Enable/Disable Download features
-    - enableName [`Boolean`] (`Default:true`): Enable/Disable Name input
-    - enablePrint [`Boolean`] (`Default:false`): Enable/Disable Printing features
-    - enableSubmitBtn [`Boolean`] (`Default:true`): Enable/Disable Submit button
-    - enableUnprintable [`Boolean`] (`Default:false`): Active unprintable objects, like fingerprint
-    - maxNameLength [`Number`]: Set name max length
-
-#### NOTE : If "datas.content" is undefined, it create a new card template.
-
-## Enable Card Sizes
-
-Parameter `enabledCardSizes` enable/disable templates size.
-To do it , you need to create a `Object` like this :
-
+#### canvas
+The canvas where to render the template.
+#### grid
+Grid/View settings
 ```js
-enabledCardSizes: {
-  cr80: true,
-  res_4to3: false,
-  res_3to2 : false,
-  res_16to9 : true,
-  custom: false
+{
+  ruler: false
 }
 ```
+#### interaction
+Set to `true` to enable onCard* events.
+#### onCardClickDown
+Event triggered on card click down.
+#### onCardClickUp
+Event triggered on card click up.
+#### onCardMouseMove
+Event triggered on card mouse move.
+#### onFieldDragStart
+Event triggered on a field drag start.
+#### onFieldDragEnd
+Event triggered on a field drag end.
+#### onFieldDragMove
+Event triggered on a field drag move.
+#### onSelectedSpriteCreated
+Event triggered on selected sprite creation.
+#### onFieldAdded
+Event triggered on new field addition.
+#### onSelectionChanged
+Event triggered on field selection change.
+#### onChange
+Event triggered on template content change.
+#### onError
+Event triggered on error.
 
-This is the current list of supported sizes :
+### createCardStage method
 
+#### layout
+The card layout.
   - `cr80` : Standard card size
   - `res_4to3` : 4/3 visual
   - `res_3to2` : 3/2 visual
   - `res_8to5` : 8/5 visual
   - `res_5to3` : 5/3 visual
   - `res_16to9` : 16/9 visual
-  - `custom` : Allow custom size
-
-## Load Card Templates
-
-The function can take a card template in parameter `content`, useful if you want to edit a card directly after loading.
-
-It is recommended to use JSON format.
-
-XML import and export is supported as well for compatibility reasons (.dpf files).
-
-## Jquery
-
-Jquery is being used for some specific aspects of this component. This is not a best practice as it may conflict with React DOM management. Ideally, it will be further removed on a later version.
+  - `custom` : Use custom size
+#### orientation
+The layout orientation.
+ - `landscape`
+ - `portrait`
+#### tpl
+The template to render.
+#### resize
+Resize based on the parent container. If the layout size exceed the container size, then rulers are forced as disabled and the view scaled.
 
 # License
-
 This project has been created by Leosac SAS.
 The source of this library is released under LGPLv3 license.

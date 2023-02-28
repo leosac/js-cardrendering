@@ -89,7 +89,7 @@ class CardRenderer {
     /**
      * Create the PIXI stage for one side of card
      */
-    async createCardStage(layout = 'cr80', orientation = 'Landscape', tpl = undefined, resize = false)
+    async createCardStage(layout = 'cr80', orientation = 'landscape', tpl = undefined, resize = false)
     {
         if (this.graphics.stage) {
             this.graphics.stage.destroy(true);
@@ -104,10 +104,10 @@ class CardRenderer {
                 layout = CardHelper.getLayouts()[0].value;
         }
         this.data.card.layout = layout;
-        this.data.card.width = (orientation === 'Landscape') ? this.layouts['px'][layout][0] : this.layouts['px'][layout][1];
-        this.data.card.height = (orientation === 'Landscape') ? this.layouts['px'][layout][1] : this.layouts['px'][layout][0];
-        this.data.card.width_unit = (orientation === 'Landscape') ? this.layouts[this.data.grid.unit][layout][0] : this.layouts[this.data.grid.unit][layout][1];
-        this.data.card.height_unit = (orientation === 'Landscape') ? this.layouts[this.data.grid.unit][layout][1] : this.layouts[this.data.grid.unit][layout][0];
+        this.data.card.width = (orientation === 'landscape') ? this.layouts['px'][layout][0] : this.layouts['px'][layout][1];
+        this.data.card.height = (orientation === 'landscape') ? this.layouts['px'][layout][1] : this.layouts['px'][layout][0];
+        this.data.card.width_unit = (orientation === 'landscape') ? this.layouts[this.data.grid.unit][layout][0] : this.layouts[this.data.grid.unit][layout][1];
+        this.data.card.height_unit = (orientation === 'landscape') ? this.layouts[this.data.grid.unit][layout][1] : this.layouts[this.data.grid.unit][layout][0];
         let width = this.data.card.width + (2 * this.data.card.border);
         let height = this.data.card.height + (2 * this.data.card.border);
         const rulerwidth = 40;
