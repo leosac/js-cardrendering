@@ -1,5 +1,5 @@
 {
-  "name": "cardrendering",
+  "name": "@leosac/cardrendering",
   "version": "1.1.0",
   "description": "Card Rendering engine for CR-80 cards and more",
   "main": "dist/cardrendering.js",
@@ -32,11 +32,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/leosac/js-cardrendering.git"
+    "url": "git+https://github.com/leosac/js-cardrendering.git"
   },
   "author": "leosac",
   "organization": "leosac",
-  "license": "LGPLv3",
+  "license": "LGPL-3.0-or-later",
   "homepage": "https://leosac.com",
   "browserslist": {
     "production": [
@@ -49,5 +49,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/leosac/js-cardrendering/issues"
+  },
+  "keywords": [
+    "card",
+    "printing",
+    "template",
+    "cr-80",
+    "render",
+    "rendering",
+    "leosac"
+  ]
 }
