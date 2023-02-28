@@ -123,8 +123,6 @@ class Fields {
                 fontSize: '12pt',
                 fontStyle: 'Normal',
                 align: 'TopLeft',
-                borderWidth: 0,
-                borderColor: 0x000000,
                 scaleFont: false,
                 autoSize: true,
                 wordBreak: false,
@@ -135,6 +133,10 @@ class Fields {
                 y: Math.round(position.y),
                 zIndex: 0,
                 rotation: 0,
+                border: {
+                    width: 0,
+                    color: 0x000000
+                },
                 ...options
             });
         } else if (options.type === 'picture') {
@@ -143,12 +145,14 @@ class Fields {
                 value: this.blankimg,
                 width: 75,
                 height: 75,
-                borderWidth: 0,
-                borderColor: 0x000000,
                 x: Math.round(position.x),
                 y: Math.round(position.y),
                 zIndex: 0,
                 rotation: 0,
+                border: {
+                    width: 0,
+                    color: 0x000000
+                },
                 ...options
             }, createOpt);
         } else if (options.type === 'barcode') {
@@ -179,7 +183,7 @@ class Fields {
                 rotation: 0,
                 ...options
             });
-        } else if (options.type === 'dataMatrix') {
+        } else if (options.type === 'datamatrix') {
             field = createDatamatrixField({
                 useMacros: false,
                 value: '012345',
@@ -188,8 +192,8 @@ class Fields {
                 color: 0x000000,
                 x: Math.round(position.x),
                 y: Math.round(position.y),
-                SizeIdx: -2,
-                Scheme: 0,
+                sizeIdx: -2,
+                scheme: 0,
                 zIndex: 0,
                 rotation: 0,
                 ...options
@@ -212,28 +216,32 @@ class Fields {
             field = createRectangleShapeField({
                 useMacros: false,
                 color: 0xffffff,
-                borderWidth: 1,
-                borderColor: 0x000000,
                 width: 75,
                 height: 75,
                 x: Math.round(position.x),
                 y: Math.round(position.y),
                 zIndex: 0,
                 rotation: 0,
+                border: {
+                    width: 1,
+                    color: 0x000000
+                },
                 ...options
             });
         } else if (options.type === 'circle') {
             field = createCircleShapeField({
                 useMacros: false,
                 color: 0xffffff,
-                borderWidth: 1,
-                borderColor: 0x000000,
                 width: 75,
                 height: 75,
                 x: Math.round(position.x),
                 y: Math.round(position.y),
                 zIndex: 0,
                 rotation: 0,
+                border: {
+                    width: 1,
+                    color: 0x000000
+                },
                 ...options
             });
         } else if (options.type === 'fingerprint') {
@@ -247,6 +255,10 @@ class Fields {
                 height: 64,
                 zIndex: 0,
                 rotation: 0,
+                border: {
+                    width: 0,
+                    color: 0x000000
+                },
                 ...options
             });
         }
@@ -258,8 +270,6 @@ class Fields {
                 colorFill: -1,
                 fontFamily: 'Verdana',
                 fontSize: '12pt',
-                borderWidth: 0,
-                borderColor: 0x000000,
                 scaleFont: false,
                 autoSize: true,
                 width: 46,
@@ -268,6 +278,10 @@ class Fields {
                 y: Math.round(position.y),
                 zIndex: 0,
                 rotation: 0,
+                border: {
+                    width: 0,
+                    color: 0x000000
+                },
                 ...options
             });
         } else {

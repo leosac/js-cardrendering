@@ -84,10 +84,10 @@ CardHelper.getBarcodes = function() {
     ];
 }
 
-CardHelper.getDataMatrixSizeIdx = function(t) {
+CardHelper.getDataMatrixSizeIdx = function() {
     return [
-        { value: -2, label: t('properties.prop_datamatrix_autoSquare')},
-        { value: -3, label: t('properties.prop_datamatrix_autoRectangle')},
+        { value: -2, label: 'Auto Square' },
+        { value: -3, label: 'Auto Rectangle' },
         { value: 0, label: '10x10'},
         { value: 1, label: '12x12'},
         { value: 2, label: '14x14'},
