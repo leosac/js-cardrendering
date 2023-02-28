@@ -3,7 +3,7 @@
  *
  * @license GNU LGPL version 3
  **/
-import * as PIXI from "pixi.js-legacy";
+import * as PIXI from "pixi.js";
 import { createCanvas } from "canvas";
 import { hexColorToSignedNumber } from './convert';
 import Fields from './fields';
@@ -135,8 +135,7 @@ class CardRenderer {
             heigth: height * this.data.grid.scale,
             transparent: true,
             clearBeforeRender: true,
-            view: this.options.canvas,
-            forceCanvas: true
+            view: this.options.canvas
         });
         //Resize Canvas with real size
         this.graphics.renderer.resize(width * this.data.grid.scale , height * this.data.grid.scale);

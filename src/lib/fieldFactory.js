@@ -3,7 +3,7 @@
  *
  * @license GNU LGPL version 3
  **/
-import * as PIXI from "pixi.js-legacy";
+import * as PIXI from "pixi.js";
 import { createCanvas } from "canvas";
 import bwipjs from 'bwip-js';
 import { hexColorToSignedNumber } from "./convert";
