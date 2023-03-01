@@ -158,7 +158,7 @@ class Fields {
                 ...options
             }, createOpt);
         } else if (options.type === 'barcode') {
-            field = createBarcodeField({
+            field = await createBarcodeField({
                 useMacros: false,
                 value: '012345',
                 fontFamily: 'code39',
@@ -172,7 +172,7 @@ class Fields {
                 ...options
             });
         } else if (options.type === 'pdf417') {
-            field = createPDF417Field({
+            field = await createPDF417Field({
                 useMacros: false,
                 value: '012345',
                 fontSize: 30,
@@ -186,7 +186,7 @@ class Fields {
                 ...options
             });
         } else if (options.type === 'datamatrix') {
-            field = createDatamatrixField({
+            field = await createDatamatrixField({
                 useMacros: false,
                 value: '012345',
                 width: 75,

@@ -152,4 +152,4 @@ Resize based on the parent container. If the layout size exceed the container si
 
 # License
 This project has been created by Leosac SAS.
-The source of this library is released under LGPLv3 license.
+The source code of this library is released under LGPLv3 license.
