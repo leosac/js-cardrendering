@@ -4,6 +4,11 @@ For node.js and web browsers.
 
 ![CardRendering Sample](https://github.com/leosac/js-cardrendering/blob/master/example/sample-cardrendering-red.png?raw=true)
 
+Related projects using *js-cardrendering*:
+ * [js-cardeditor](https://github.com/leosac/js-cardeditor): a web editor for card printing template
+ * [card-printing-worker](https://github.com/leosac/card-printing-worker): a node server providing REST API for bitmap generation/printing
+ * [leosac-credential-provisioning](https://leosac.com/credential-provisioning/): a complete professional card provisioning solution for both card encoding and printing
+
 ## Usage
 ```js
 const tpl = {
@@ -35,6 +40,9 @@ const tpl = {
 
 ### Node
 `npm install @leosac/cardrendering --save`
+
+PIXI.js is required. It is a peer dependency because of the differents versions available depending of your targeted environment.
+Use `npm install pixi.js --save` or `npm install @pixi/node --save`.
 
 ```js
 import { createCanvas } from "canvas";
