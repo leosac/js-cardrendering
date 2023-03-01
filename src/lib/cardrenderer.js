@@ -91,11 +91,14 @@ class CardRenderer {
      */
     async createCardStage(layout = 'cr80', orientation = 'landscape', tpl = undefined, resize = false)
     {
-        if (this.graphics.stage) {
-            this.graphics.stage.destroy(true);
+        if (this.options.stage) {
+            this.graphics.stage = this.options.stage;
+        } else {
+            if (this.graphics.stage) {
+                this.graphics.stage.destroy(true);
+            }
+            this.graphics.stage = new PIXI.Container();
         }
-
-        this.graphics.stage = new PIXI.Container();
 
         if (layout === undefined || layout === '') {
             if (!(layout in this.layouts['px']))
@@ -130,13 +133,17 @@ class CardRenderer {
             height += rulerwidth + rulerspacing * 2;
         }
 
-        //Create the renderer
-        this.graphics.renderer = PIXI.autoDetectRenderer({width: width * this.data.grid.scale,
-            heigth: height * this.data.grid.scale,
-            transparent: true,
-            clearBeforeRender: true,
-            view: this.options.canvas
-        });
+        if (this.options.renderer) {
+            this.graphics.renderer = this.options.renderer;
+        } else {
+            //Create the renderer
+            this.graphics.renderer = PIXI.autoDetectRenderer({width: width * this.data.grid.scale,
+                heigth: height * this.data.grid.scale,
+                transparent: true,
+                clearBeforeRender: true,
+                view: this.options.canvas
+            });
+        }
         //Resize Canvas with real size
         this.graphics.renderer.resize(width * this.data.grid.scale , height * this.data.grid.scale);
         this.graphics.card = new PIXI.Graphics();
@@ -144,7 +151,7 @@ class CardRenderer {
             background: tpl ? tpl.background : {}
         };
         this.drawCardBackground();
-        this.graphics.card.interactive = true;
+        this.graphics.card.interactive = this.options.interaction;
         this.graphics.card.buttonMode = true;
         this.graphics.card.cursor = this.options.interaction ? 'crosshair' : 'not-allowed';
         if (this.options.interaction) {
@@ -342,100 +349,102 @@ class CardRenderer {
             }
 
             let hasBackground = false;
-            if (cardSideRef.options.background.picture) {
-                cardSideRef.options.background.picture = cardSideRef.options.background.picture.trim();
-                if (cardSideRef.options.background.picture !== '') {
-                    // Picture as a background.
-                    const texture = PIXI.Texture.from(cardSideRef.options.background.picture);
-                    const sprite = new PIXI.Sprite(texture);
+            if (cardSideRef.options.background) {
+                if (cardSideRef.options.background.picture) {
+                    cardSideRef.options.background.picture = cardSideRef.options.background.picture.trim();
+                    if (cardSideRef.options.background.picture !== '') {
+                        // Picture as a background.
+                        const texture = PIXI.Texture.from(cardSideRef.options.background.picture);
+                        const sprite = new PIXI.Sprite(texture);
 
-                    sprite.options = {};
+                        sprite.options = {};
 
-                    // Stretch background to card dimension.
-                    if (cardSideRef.options.background.picture_layout === 3)
-                    {
-                        sprite.width = this.data.card.width;
-                        sprite.height = this.data.card.height;
-                    }
-                    // Center the background image.
-                    else if (cardSideRef.options.background.picture_layout === 2)
-                    {
-                        const anchor = new PIXI.ObservablePoint(() => {}, null, 0.5, 0.5);
-                        sprite.anchor = anchor;
-                        sprite.x = this.data.card.width / 2;
-                        sprite.y = this.data.card.height / 2;
-                    }
-                    // Zoom
-                    else if (cardSideRef.options.background.picture_layout === 4)
-                    {
-                        // We need to wait for the texture to be loaded
-                        // otherwise we don't have access to width and height
-                        // and cannot compute the new scale.
-                        const setScaleFct = () =>
+                        // Stretch background to card dimension.
+                        if (cardSideRef.options.background.picture_layout === 3)
                         {
-                            const xscale = this.data.card.width / sprite.width;
-                            const yscale = this.data.card.height / sprite.height;
-
-                            // Keep the smallest scale to avoid becoming too big.
-                            const scale = yscale < xscale ? yscale : xscale;
-                            sprite.scale = new PIXI.Point(scale, scale);
-                        };
-                        // Either the texture has already been loaded, in that case
-                        // we set the scale right now...
-                        if (texture.baseTexture.hasLoaded)
-                        {
-                            setScaleFct();
+                            sprite.width = this.data.card.width;
+                            sprite.height = this.data.card.height;
                         }
-                        // Or we set a callback to adjust the scale when the texture
-                        // is loaded.
+                        // Center the background image.
+                        else if (cardSideRef.options.background.picture_layout === 2)
+                        {
+                            const anchor = new PIXI.ObservablePoint(() => {}, null, 0.5, 0.5);
+                            sprite.anchor = anchor;
+                            sprite.x = this.data.card.width / 2;
+                            sprite.y = this.data.card.height / 2;
+                        }
+                        // Zoom
+                        else if (cardSideRef.options.background.picture_layout === 4)
+                        {
+                            // We need to wait for the texture to be loaded
+                            // otherwise we don't have access to width and height
+                            // and cannot compute the new scale.
+                            const setScaleFct = () =>
+                            {
+                                const xscale = this.data.card.width / sprite.width;
+                                const yscale = this.data.card.height / sprite.height;
+
+                                // Keep the smallest scale to avoid becoming too big.
+                                const scale = yscale < xscale ? yscale : xscale;
+                                sprite.scale = new PIXI.Point(scale, scale);
+                            };
+                            // Either the texture has already been loaded, in that case
+                            // we set the scale right now...
+                            if (texture.baseTexture.hasLoaded)
+                            {
+                                setScaleFct();
+                            }
+                            // Or we set a callback to adjust the scale when the texture
+                            // is loaded.
+                            else
+                            {
+                                texture.on("update", setScaleFct);
+                            }
+                        }
+
+                        sprite.options.zIndex = -1000; // Far behind, as it is the background...
+                        cardSideRef.addChild(sprite);
+
+                        let graphic_border = new PIXI.Graphics();
+                        graphic_border.lineStyle(this.data.card.border, 0x000000, 1);
+                        graphic_border.options = {};
+                        graphic_border.options.zIndex = 990;
+
+                        if (this.data.card.layout === "cr80") //cards
+                            graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                         else
-                        {
-                            texture.on("update", setScaleFct);
-                        }
+                            graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
+                        cardSideRef.addChild(graphic_border);
+
+                        // Removed next time we draw the background.
+                        this.graphics.bg_components = [graphic_border, sprite];
+                        this.sortByZIndex();
+                        hasBackground = true;
                     }
-
-                    sprite.options.zIndex = -1000; // Far behind, as it is the background...
-                    cardSideRef.addChild(sprite);
-
+                }
+                if (!hasBackground) {
+                    // Create card border
                     let graphic_border = new PIXI.Graphics();
                     graphic_border.lineStyle(this.data.card.border, 0x000000, 1);
-                    graphic_border.options = {};
-                    graphic_border.options.zIndex = 990;
-
                     if (this.data.card.layout === "cr80") //cards
                         graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
                         graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
+                    graphic_border.options = {};
+                    graphic_border.options.zIndex = 1000;
                     cardSideRef.addChild(graphic_border);
 
-                    // Removed next time we draw the background.
-                    this.graphics.bg_components = [graphic_border, sprite];
-                    this.sortByZIndex();
+                    // User colored (white included) background.
+                    cardSideRef.lineStyle(this.data.card.border, 0x000000, 1);
+                    cardSideRef.beginFill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
+
+                    if (this.data.card.layout === "cr80") //cards
+                        cardSideRef.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
+                    else
+                        cardSideRef.drawRect(0, 0, this.data.card.width, this.data.card.height);
+                    cardSideRef.endFill();
                     hasBackground = true;
                 }
-            }
-            if (!hasBackground) {
-                // Create card border
-                let graphic_border = new PIXI.Graphics();
-                graphic_border.lineStyle(this.data.card.border, 0x000000, 1);
-                if (this.data.card.layout === "cr80") //cards
-                    graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
-                else
-                    graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
-                graphic_border.options = {};
-                graphic_border.options.zIndex = 1000;
-                cardSideRef.addChild(graphic_border);
-
-                // User colored (white included) background.
-                cardSideRef.lineStyle(this.data.card.border, 0x000000, 1);
-                cardSideRef.beginFill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
-
-                if (this.data.card.layout === "cr80") //cards
-                    cardSideRef.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
-                else
-                    cardSideRef.drawRect(0, 0, this.data.card.width, this.data.card.height);
-                cardSideRef.endFill();
-                hasBackground = true;
             }
         }
     }

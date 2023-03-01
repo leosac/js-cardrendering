@@ -2,15 +2,15 @@
   "name": "@leosac/cardrendering",
   "version": "1.2.0",
   "description": "Card Rendering engine for CR-80 cards and more",
-  "main": "dist/cardrendering.js",
+  "main": "dist/cardrendering.node.js",
+  "browser": "dist/cardrendering.js",
   "directories": {
     "example": "example"
   },
   "dependencies": {
     "bwip-js": "^3.2.2",
     "canvas": "^2.11.0",
-    "esm": "^3.2.25",
-    "pixi.js": "^7.1.3"
+    "esm": "^3.2.25"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
@@ -25,6 +25,10 @@
     "jsdom": "21.1.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1"
+  },
+  "peerDependencies": {
+    "@pixi/node": "^7.1.3",
+    "pixi.js": "^7.1.3"
   },
   "scripts": {
     "build": "webpack",

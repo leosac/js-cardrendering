@@ -194,179 +194,133 @@ function createUrlLinkField(options)
     return label;
 }
 
-function createBarcodeField(options)
+async function createBwipSprint(options, bwopts) {
+    try {
+        let pngDataURL;
+        let height = 100;
+        let width = 100;
+        if (bwipjs.toCanvas) {
+            const canvas = createCanvas(options.height, options.width);
+            bwipjs.toCanvas(canvas, bwopts);
+            pngDataURL = canvas.toDataURL('image/png');
+            height = canvas.height;
+            width = canvas.width;
+        } else {
+            const png = await bwipjs.toBuffer(bwopts);
+            pngDataURL = "data:image/png;base64," + png.toString("base64");
+        }
+        const texture = await PIXI.Assets.load(pngDataURL);
+        const sprite = PIXI.Sprite.from(texture);
+        sprite.options = options;
+        sprite.x = options.x;
+        sprite.y = options.y;
+        sprite.height = height;
+        sprite.width = width;
+        options.height = sprite.height;
+        options.width = sprite.width;
+        if (options.rotation > 0)
+        {
+            sprite.angle = options.rotation;
+        }
+        return sprite;
+    } catch (e) {
+        console.log(e);
+        console.error("jscardrendering : Error during bwipjs generation");
+    }
+}
+
+async function createBarcodeField(options)
 {
     options.type = 'barcode';
-
-    let canvas = createCanvas(100, 30);
-    try {
-        bwipjs.toCanvas(canvas, {
-            bcid:        options.fontFamily.toLowerCase(),
-            text:        options.value,
-            includetext: false,
-            backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-            barcolor: hexColorToSignedNumber(options.color)
-        });
-        const sprite = PIXI.Sprite.from(canvas.toDataURL('image/png'));
-        sprite.options = options;
-        sprite.x = options.x;
-        sprite.y = options.y;
-        sprite.height = canvas.height;
-        sprite.width = canvas.width;
-        options.height = sprite.height;
-        options.width = sprite.width;
-        if (options.rotation > 0)
-        {
-            sprite.angle = options.rotation;
-        }
-        return sprite;
-
-    } catch (e) {
-        console.log(e);
-        console.error("jscardrendering : Error during barcode generation");
-    }
+    const bwopts = {
+        bcid:        options.fontFamily.toLowerCase(),
+        text:        options.value,
+        includetext: false,
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
+        barcolor: hexColorToSignedNumber(options.color)
+    };
+    return await createBwipSprint(options, bwopts);
 }
 
-function createQRCodeField(options)
+async function createQRCodeField(options)
 {
     options.type = 'qrcode';
-
-    let canvas = createCanvas(100, 100);
-    try {
-        bwipjs.toCanvas(canvas, {
-            bcid:        'qrcode',
-            text:        options.value,
-            includetext: false,
-            backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-            barcolor: hexColorToSignedNumber(options.color),
-            eclevel: options.ecLevel
-        });
-        const sprite = PIXI.Sprite.from(canvas.toDataURL('image/png'));
-        sprite.options = options;
-        sprite.x = options.x;
-        sprite.y = options.y;
-        sprite.height = canvas.height;
-        sprite.width = canvas.width;
-        options.height = sprite.height;
-        options.width = sprite.width;
-    
-        if (options.rotation > 0)
-        {
-            sprite.angle = options.rotation;
-        }
-        return sprite;
-
-    } catch (e) {
-        console.log(e);
-        console.error("jscardrendering : Error during qrcode generation");
-    }
+    const bwopts = {
+        bcid:        'qrcode',
+        text:        options.value,
+        includetext: false,
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
+        barcolor: hexColorToSignedNumber(options.color),
+        eclevel: options.ecLevel
+    };
+    return await createBwipSprint(options, bwopts);
 }
 
-function createPDF417Field(options)
+async function createPDF417Field(options)
 {
     options.type = 'pdf417';
-    let canvas = createCanvas(100, 30);
-    try {
-        bwipjs.toCanvas(canvas, {
-            bcid:        'pdf417',
-            text:        options.value,
-            includetext: true,
-            textxalign:  'center',
-            backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-            barcolor: hexColorToSignedNumber(options.color),
-            eclevel: options.ecLevel
-        });
-        const sprite = PIXI.Sprite.from(canvas.toDataURL('image/png'));
-        sprite.options = options;
-        sprite.x = options.x;
-        sprite.y = options.y;
-        sprite.height = canvas.height;
-        sprite.width = canvas.width;
-        options.height = sprite.height;
-        options.width = sprite.width;
-    
-        if (options.rotation > 0)
-        {
-            sprite.angle = options.rotation;
-        }
-        return sprite;
-
-    } catch (e) {
-        console.log(e);
-        console.error("jscardrendering : Error during pdf417 generation");
-    }
+    const bwopts = {
+        bcid:        'pdf417',
+        text:        options.value,
+        includetext: true,
+        textxalign:  'center',
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
+        barcolor: hexColorToSignedNumber(options.color),
+        eclevel: options.ecLevel
+    };
+    return await createBwipSprint(options, bwopts);
 }
 
-function createDatamatrixField(options)
+async function createDatamatrixField(options)
 {
     options.type = 'datamatrix';
     options.sizeIdx = Number(options.sizeIdx);
     options.scheme = Number(options.scheme);
-    let canvas = createCanvas(150, 150);
-    try {
-        let bwOptions = {
-            text:        options.value,
-            includetext: true,
-            textxalign:  'center',
-            backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-            barcolor: hexColorToSignedNumber(options.color),
-        };
-
-        if (options.scheme === 0)
+    const bwopts = {
+        text:        options.value,
+        includetext: true,
+        textxalign:  'center',
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
+        barcolor: hexColorToSignedNumber(options.color)
+    };
+    
+    if (options.scheme === 0)
+    {
+        //ASCII
+        if (options.sizeIdx === -2 || (options.sizeIdx >= 0 && options.sizeIdx <= 23) )
         {
-            //ASCII
-            if (options.sizeIdx === -2 || (options.sizeIdx >= 0 && options.sizeIdx <= 23) )
-            {
-                //Square
-                bwOptions.bcid = "datamatrix";
-                bwOptions.format = "square";
-                if (options.sizeIdx !== -2)
-                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
-            }
-            else if (options.sizeIdx === -3 || (options.sizeIdx >= 24 && options.sizeIdx <= 29) )
-            {
-                //Rectangle
-                bwOptions.bcid = "datamatrixrectangular";
-                bwOptions.format = "rectangle";
-                if (options.sizeIdx !== -3)
-                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
-            }
+            //Square
+            bwopts.bcid = "datamatrix";
+            bwopts.format = "square";
+            if (options.sizeIdx !== -2)
+                bwopts.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
         }
-        else if (options.scheme === 6)
+        else if (options.sizeIdx === -3 || (options.sizeIdx >= 24 && options.sizeIdx <= 29) )
         {
-            bwOptions.bcid = "gs1datamatrix";
-            if (options.sizeIdx === -2 || (options.sizeIdx >= 0 && options.sizeIdx <= 23) )
-            {
-                bwOptions.format = "square";
-                if (options.sizeIdx !== -2)
-                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
-            }
-            else if (options.sizeIdx === -3 || (options.sizeIdx >= 24 && options.sizeIdx <= 29) )
-            {
-                bwOptions.format = "rectangle";
-                if (options.sizeIdx !== -3)
-                    bwOptions.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
-            }   
+            //Rectangle
+            bwopts.bcid = "datamatrixrectangular";
+            bwopts.format = "rectangle";
+            if (options.sizeIdx !== -3)
+                bwopts.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
         }
-
-
-        bwipjs.toCanvas(canvas, bwOptions);
-        const sprite = PIXI.Sprite.from(canvas.toDataURL('image/png'));
-        sprite.options = options;
-        sprite.x = options.x;
-        sprite.y = options.y;
-        sprite.height = options.height;
-        sprite.width = options.width;
-        if (options.rotation > 0)
-        {
-            sprite.angle = options.rotation;
-        }
-        return sprite;
-
-    } catch (e) {
-        console.log(e);
-        console.error("jscardrendering : Error during datamatrix generation");
     }
+    else if (options.scheme === 6)
+    {
+        bwopts.bcid = "gs1datamatrix";
+        if (options.sizeIdx === -2 || (options.sizeIdx >= 0 && options.sizeIdx <= 23) )
+        {
+            bwopts.format = "square";
+            if (options.sizeIdx !== -2)
+                bwopts.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
+        }
+        else if (options.sizeIdx === -3 || (options.sizeIdx >= 24 && options.sizeIdx <= 29) )
+        {
+            bwopts.format = "rectangle";
+            if (options.sizeIdx !== -3)
+                bwopts.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
+        }   
+    }
+    return await createBwipSprint(options, bwopts);
 }
 
 function createFingerprintField(options)

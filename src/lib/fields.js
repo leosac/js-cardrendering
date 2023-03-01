@@ -29,56 +29,58 @@ class Fields {
     addFieldToCard(field) {
         if (field !== null)
         {
-            field.interactive = true;
-            field
-                .on('mousedown', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragStart) {
-                        this.cardside.options.onFieldDragStart(event, this.cardside, field);
-                    }
-                })
-                .on('touchstart', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragStart) {
-                        this.cardside.options.onFieldDragStart(event, this.cardside, field);
-                    }
-                })
-                .on('mouseup', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragEnd) {
-                        this.cardside.options.onFieldDragEnd(event, this.cardside, field);
-                    }
-                })
-                .on('mouseupoutside', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragEnd) {
-                        this.cardside.options.onFieldDragEnd(event, this.cardside, field);
-                    }
-                })
-                .on('touchend', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragEnd) {
-                        this.cardside.options.onFieldDragEnd(event, this.cardside, field);
-                    }
-                })
-                .on('touchendoutside', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragEnd) {
-                        this.cardside.options.onFieldDragEnd(event, this.cardside, field);
-                    }
-                })
-                .on('mousemove', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragMove) {
-                        this.cardside.options.onFieldDragMove(event, this.cardside, field);
-                    }
-                })
-                .on('touchmove', (event) =>
-                {
-                    if (this.cardside.options.onFieldDragMove) {
-                        this.cardside.options.onFieldDragMove(event, this.cardside, field);
-                    }
-                });
+            field.interactive = this.cardside.options.interaction;
+            if (this.cardside.options.interaction) {
+                field
+                    .on('mousedown', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragStart) {
+                            this.cardside.options.onFieldDragStart(event, this.cardside, field);
+                        }
+                    })
+                    .on('touchstart', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragStart) {
+                            this.cardside.options.onFieldDragStart(event, this.cardside, field);
+                        }
+                    })
+                    .on('mouseup', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragEnd) {
+                            this.cardside.options.onFieldDragEnd(event, this.cardside, field);
+                        }
+                    })
+                    .on('mouseupoutside', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragEnd) {
+                            this.cardside.options.onFieldDragEnd(event, this.cardside, field);
+                        }
+                    })
+                    .on('touchend', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragEnd) {
+                            this.cardside.options.onFieldDragEnd(event, this.cardside, field);
+                        }
+                    })
+                    .on('touchendoutside', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragEnd) {
+                            this.cardside.options.onFieldDragEnd(event, this.cardside, field);
+                        }
+                    })
+                    .on('mousemove', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragMove) {
+                            this.cardside.options.onFieldDragMove(event, this.cardside, field);
+                        }
+                    })
+                    .on('touchmove', (event) =>
+                    {
+                        if (this.cardside.options.onFieldDragMove) {
+                            this.cardside.options.onFieldDragMove(event, this.cardside, field);
+                        }
+                    });
+            }
             if (field.selected)
             {
                 field.addChild(this.createSelectedSprite(field));
@@ -199,7 +201,7 @@ class Fields {
                 ...options
             });
         } else if (options.type === 'qrcode') {
-            field = createQRCodeField({
+            field = await createQRCodeField({
                 useMacros: false,
                 value: 'https://www.leosac.com',
                 ecLevel: 'M',
