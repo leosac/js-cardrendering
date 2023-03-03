@@ -16,6 +16,8 @@ class Grid {
         if (width > 0 && height > 0)
         {
             this.cardside.graphics.grid = new PIXI.Container();
+            this.cardside.graphics.grid.x = this.cardside.graphics.card.x;
+            this.cardside.graphics.grid.y = this.cardside.graphics.card.y;
 
             for (var i = 0; i < this.cardside.data.grid.rows; i++) {
                 for (var j = 0; j < this.cardside.data.grid.columns; j++) {
@@ -27,14 +29,14 @@ class Grid {
                     this.cardside.graphics.grid.addChild(cell);
                 }
             }
-            this.cardside.graphics.card.addChild(this.cardside.graphics.grid);
+            this.cardside.graphics.stage.addChild(this.cardside.graphics.grid);
         }
     }
 
     cleanGrid() {
         if (this.cardside.graphics.grid !== undefined && this.cardside.graphics.grid !== null)
         {
-            this.cardside.graphics.card.removeChild(this.cardside.graphics.grid);
+            this.cardside.graphics.stage.removeChild(this.cardside.graphics.grid);
             this.cardside.graphics.grid.destroy(true);
             this.cardside.graphics.grid = null;
         }

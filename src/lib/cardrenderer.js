@@ -12,6 +12,9 @@ import CardHelper from './helpers';
 
 class CardRenderer {
     constructor(options) {
+        if (!options) {
+            options = {};
+        }
         this.options = options;
         this.features = {
             fields: new Fields(this),
@@ -31,13 +34,14 @@ class CardRenderer {
                 clipboard: []
             },
             grid: {
-                ruler: (options && options.grid && options.grid.ruler) ? true : false,
+                ruler: true,
                 enabled: false,
                 unit: 'px',
                 scale: 1,
                 step: 1,
                 columns: 8,
-                rows: 6
+                rows: 6,
+                ...options.grid
             }
         };
         this.graphics = {};
@@ -290,6 +294,10 @@ class CardRenderer {
 
         this.graphics.stage.addChild(this.graphics.card);
         this.sortByZIndex();
+
+        if (this.data.grid.enabled) {
+            this.features.grid.drawGrid();
+        }
     }
 
     animate() {
@@ -447,6 +455,10 @@ class CardRenderer {
     }
 
     createCanvas() {
+        if (!this.graphics.stage) {
+            return undefined;
+        }
+
         this.graphics.renderer.render(this.graphics.stage);
 
         const resizedCanvas = createCanvas(this.graphics.renderer.view.width / 2, this.graphics.renderer.view.height / 2);
@@ -460,45 +472,6 @@ class CardRenderer {
         {
             resizedContext.drawImage(this.graphics.renderer.view, 0, 0, resizedCanvas.width, resizedCanvas.height);
         }
-        return resizedCanvas;
-    }
-
-    createCanvasSnap() {
-        const canvasDOM = this.options.canvas;
-        if (!canvasDOM || !this.graphics.stage) {
-            return undefined;
-        }
-
-        //Set scale at 1 and save the old one
-        const oldscale = this.data.grid.scale;
-        this.data.grid.scale = 1;
-        this.graphics.stage.transform.scale.x = 1;
-        this.graphics.stage.transform.scale.y = 1;
-
-        //Resize card designer with scale 1
-        canvasDOM.width = canvasDOM.width / oldscale;
-        canvasDOM.height = canvasDOM.height / oldscale;
-        this.graphics.renderer.render(this.graphics.stage);
-
-        //Resize rendering canvas with 1
-        const resizedCanvas = createCanvas((this.graphics.renderer.view.width / 2) / this.data.grid.scale, (this.graphics.renderer.view.height / 2) / this.data.grid.scale);
-        const resizedContext = resizedCanvas.getContext("2d");
-        this.data.grid.scale = oldscale;
-
-        //Remove ruler if present
-        if (!this.data.grid.ruler)
-        {
-            resizedCanvas.height += 30;
-            resizedCanvas.width += 30;
-        }
-
-        resizedContext.drawImage(this.graphics.renderer.view, this.graphics.card.position.x - this.data.card.border, this.graphics.card.position.y - this.data.card.border, this.graphics.card.width + this.data.card.border, this.graphics.card.height + this.data.card.border, 0, 0, resizedCanvas.width, resizedCanvas.height);
-        
-        //Reset values
-        this.graphics.stage.transform.scale.x = oldscale;
-        this.graphics.stage.transform.scale.y = oldscale;
-        canvasDOM.width = canvasDOM.width * oldscale;
-        canvasDOM.height = canvasDOM.height * oldscale;
         return resizedCanvas;
     }
 
@@ -520,7 +493,7 @@ class CardRenderer {
 
     toJson() {
         const tpl = this.getTemplate();
-        return JSON.stringify(tpl);
+        return JSON.stringify(tpl, null, 2);
     }
 }
 
