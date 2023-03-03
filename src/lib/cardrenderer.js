@@ -379,8 +379,7 @@ class CardRenderer {
                             // We need to wait for the texture to be loaded
                             // otherwise we don't have access to width and height
                             // and cannot compute the new scale.
-                            const setScaleFct = () =>
-                            {
+                            const setScaleFct = () => {
                                 const xscale = this.data.card.width / sprite.width;
                                 const yscale = this.data.card.height / sprite.height;
 
@@ -390,14 +389,12 @@ class CardRenderer {
                             };
                             // Either the texture has already been loaded, in that case
                             // we set the scale right now...
-                            if (texture.baseTexture.hasLoaded)
-                            {
+                            if (texture.baseTexture.hasLoaded) {
                                 setScaleFct();
                             }
                             // Or we set a callback to adjust the scale when the texture
                             // is loaded.
-                            else
-                            {
+                            else {
                                 texture.on("update", setScaleFct);
                             }
                         }
@@ -410,7 +407,7 @@ class CardRenderer {
                         graphic_border.options = {};
                         graphic_border.options.zIndex = 990;
 
-                        if (this.data.card.layout === "cr80") //cards
+                        if (this.data.card.layout.size === "cr80") //cards
                             graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                         else
                             graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
@@ -426,7 +423,7 @@ class CardRenderer {
                     // Create card border
                     let graphic_border = new PIXI.Graphics();
                     graphic_border.lineStyle(this.data.card.border, 0x000000, 1);
-                    if (this.data.card.layout === "cr80") //cards
+                    if (this.data.card.layout.size === "cr80") //cards
                         graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
                         graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
@@ -438,7 +435,7 @@ class CardRenderer {
                     cardSideRef.lineStyle(this.data.card.border, 0x000000, 1);
                     cardSideRef.beginFill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
 
-                    if (this.data.card.layout === "cr80") //cards
+                    if (this.data.card.layout.size === "cr80") //cards
                         cardSideRef.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
                         cardSideRef.drawRect(0, 0, this.data.card.width, this.data.card.height);
@@ -505,7 +502,7 @@ class CardRenderer {
         return resizedCanvas;
     }
 
-    toJson() {
+    getTemplate() {
         const tpl = { fields: [] };
         if (this.graphics.card) {
             tpl.background = this.graphics.card.options.background
@@ -519,6 +516,11 @@ class CardRenderer {
             }
         }
         return tpl;
+    }
+
+    toJson() {
+        const tpl = this.getTemplate();
+        return JSON.stringify(tpl);
     }
 }
 

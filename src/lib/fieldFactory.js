@@ -218,8 +218,7 @@ async function createBwipSprint(options, bwopts) {
         sprite.width = width;
         options.height = sprite.height;
         options.width = sprite.width;
-        if (options.rotation > 0)
-        {
+        if (options.rotation > 0) {
             sprite.angle = options.rotation;
         }
         return sprite;

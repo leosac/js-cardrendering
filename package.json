@@ -1,6 +1,6 @@
 {
   "name": "@leosac/cardrendering",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Card Rendering engine for CR-80 cards and more",
   "main": "dist/cardrendering.node.js",
   "browser": "dist/cardrendering.js",
