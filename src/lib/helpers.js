@@ -28,23 +28,30 @@ CardHelper.isHex = function (obj)
     return /^[0-9A-F]+$/i.test(obj) === true;
 };
 
-CardHelper.getLayouts = function(enabledCardSizes) {
-    let layouts = [];
-    if (enabledCardSizes.cr80)
-        layouts.push({value: 'cr80', text: 'create.cr80'});
-    if (enabledCardSizes.res_3to2)
-        layouts.push({value: 'res_4to3', textv: '4:3'});
-    if (enabledCardSizes.res_3to2)
-        layouts.push({value: 'res_3to2', textv: '3:2'});
-    if (enabledCardSizes.res_8to5)
-        layouts.push({value: 'res_8to5', textv: '8:5'});
-    if (enabledCardSizes.res_5to3)
-        layouts.push({value: 'res_5to3', textv: '5:3'});
-    if (enabledCardSizes.res_16to9)
-        layouts.push({value: 'res_16to9', textv: '16:9'});
-    if (enabledCardSizes.custom)
-        layouts.push({value: 'custom', text: 'create.customSize'});
-    return layouts;
+CardHelper.getLayoutSizes = function(enabledCardSizes) {
+    const sizes = [];
+    if (enabledCardSizes.cr80) {
+        sizes.push({value: 'cr80', text: 'create.cr80'});
+    }
+    if (enabledCardSizes.res_3to2) {
+        sizes.push({value: 'res_4to3', textv: '4:3'});
+    }
+    if (enabledCardSizes.res_3to2) {
+        sizes.push({value: 'res_3to2', textv: '3:2'});
+    }
+    if (enabledCardSizes.res_8to5) {
+        sizes.push({value: 'res_8to5', textv: '8:5'});
+    }
+    if (enabledCardSizes.res_5to3) {
+        sizes.push({value: 'res_5to3', textv: '5:3'});
+    }
+    if (enabledCardSizes.res_16to9) {
+        sizes.push({value: 'res_16to9', textv: '16:9'});
+    }
+    if (enabledCardSizes.custom) {
+        sizes.push({value: 'custom', text: 'create.customSize'});
+    }
+    return sizes;
 }
 
 CardHelper.getFontFamilies = function() {

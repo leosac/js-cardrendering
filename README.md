@@ -54,7 +54,7 @@ const renderer = new CardRenderer({
     ruler: true
   }
 });
-renderer.createCardStage('cr80', 'landscape', tpl);
+renderer.createCardStage({size: 'cr80', orientation: 'landscape'}, tpl);
 renderer.animate();
 ```
 
@@ -71,7 +71,7 @@ const renderer = new cardrendering.CardRenderer({
     ruler: true
   }
 });
-renderer.createCardStage('cr80', 'landscape', tpl);
+renderer.createCardStage({size: 'cr80', orientation: 'landscape'}, tpl);
 renderer.animate();
 ```
 
@@ -132,8 +132,8 @@ Event triggered on error.
 
 ### createCardStage method
 
-#### layout
-The card layout.
+#### layout.size
+The card layout size.
   - `cr80` : Standard card size
   - `res_4to3` : 4/3 visual
   - `res_3to2` : 3/2 visual
@@ -141,7 +141,7 @@ The card layout.
   - `res_5to3` : 5/3 visual
   - `res_16to9` : 16/9 visual
   - `custom` : Use custom size
-#### orientation
+#### layout.orientation
 The layout orientation.
  - `landscape`
  - `portrait`

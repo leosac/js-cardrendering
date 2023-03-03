@@ -43,7 +43,7 @@
 
           function loadTemplate(tpl = undefined) {
             console.log("Loading template ", tpl);
-            renderer.createCardStage('cr80', 'landscape', tpl);
+            renderer.createCardStage({size: 'cr80', orientation: 'landscape'}, tpl);
             renderer.animate();
           }
 
