@@ -5,6 +5,6 @@
  **/
 import CardRenderer from "./cardrenderer";
 import CardHelper from "./helpers";
-import { hexColorToSignedNumber, decimalToHexColor, a2hex, hex2a } from "./convert";
+import { hexColorToSignedNumber, decimalToHexColor, a2hex, hex2a, inchToPixel, pixelToInch, inchToMillimeter, millimeterToInch } from "./convert";
 
-export { CardRenderer, CardHelper, hexColorToSignedNumber, decimalToHexColor, a2hex, hex2a };
+export { CardRenderer, CardHelper, hexColorToSignedNumber, decimalToHexColor, a2hex, hex2a, inchToPixel, pixelToInch, inchToMillimeter, millimeterToInch };

@@ -5,9 +5,10 @@
  **/
 import * as PIXI from "pixi.js";
 import { createCanvas } from "canvas";
-import { hexColorToSignedNumber } from './convert';
+import { hexColorToSignedNumber, inchToPixel, inchToMillimeter } from './convert';
 import Fields from './fields';
 import Grid from './grid';
+import Assets from './assets';
 import CardHelper from './helpers';
 
 class CardRenderer {
@@ -18,11 +19,23 @@ class CardRenderer {
         this.options = options;
         this.features = {
             fields: new Fields(this),
-            grid: new Grid(this)
+            grid: new Grid(this),
+            assets: new Assets(this)
         };
         this.data = {
             card: {
-                layout: '',
+                layout: {
+                    size: 'cr80',
+                    orientation: 'landscape',
+                    rounded: true,
+                    assets: {
+                        safetyarea: false,
+                        contactchip: false,
+                        magstripe_1to2: false,
+                        magstripe_5to16: false,
+                        luggagetagslot: false
+                    }
+                },
                 width: 0,
                 height: 0,
                 width_unit: 0,
@@ -45,35 +58,29 @@ class CardRenderer {
             }
         };
         this.graphics = {};
+        
         this.layoutsizes = {
-            px: {
-                cr80: [445, 280],
-                res_4to3: [800, 600],
-                res_3to2: [800, 533],
-                res_8to5: [800, 500],
-                res_5to3: [800, 480],
-                res_16to9: [800, 450],
-                custom: [445, 280]
-            },
-            mm: {
-                cr80: [85.6, 54],	// CR-80 is always 85.6mm * 54mm
-                res_4to3: [160, 120],
-                res_3to2: [160, 106.6],
-                res_8to5: [160, 100],
-                res_5to3: [160, 96],
-                res_16to9: [160, 90],
-                custom: [85.6, 54]
-            },
+            // Sizes references are in inches
             in: {
-                cr80: [3.3700, 2.1259],
+                cr80: [3.375, 2.125],
+                cr79: [3.303, 2.051],
+                cr100: [3.88, 2.63],
                 res_4to3: [6.2992, 4.7244],
                 res_3to2: [6.2992, 4.1968],
                 res_8to5: [6.2992, 3.9370],
                 res_5to3: [6.2992, 3.7795],
                 res_16to9: [6.2992, 3.5433],
-                custom: [3.3700, 2.1259]
-            }
+                custom: [3.375, 2.125]
+            },
+            mm: {},
+            px: {}
         };
+        // We convert into others units for further use
+        Object.keys(this.layoutsizes.in).forEach(size => {
+            const i = this.layoutsizes.in[size];
+            this.layoutsizes.mm[size] = [inchToMillimeter(i[0]), inchToMillimeter(i[1])];
+            this.layoutsizes.px[size] = [inchToPixel(i[0]), inchToPixel(i[1])];
+        });
     }
 
     handleOnError(error) {
@@ -104,13 +111,15 @@ class CardRenderer {
             this.graphics.stage = new PIXI.Container();
         }
 
-        if (layout.size === undefined || layout.size === '') {
-            if (!(layout.size in this.layoutsizes['px']))
-                layout.size = 'cr80';
-            else
-                layout.size = CardHelper.getLayoutSizes()[0].value;
+        const sizes = CardHelper.getLayoutSizes();
+        if (layout.size === undefined || layout.size === '' || !(layout.size in this.layoutsizes['in'])) {
+            layout.size = sizes[0].value;
         }
-        this.data.card.layout = layout;
+        const size = sizes.find(s => s.value === layout.size);
+        this.data.card.layout = {
+            ...(size ? size.default : {}),
+            ...layout
+        };
         this.data.card.width = (layout.orientation === 'landscape') ? this.layoutsizes['px'][layout.size][0] : this.layoutsizes['px'][layout.size][1];
         this.data.card.height = (layout.orientation === 'landscape') ? this.layoutsizes['px'][layout.size][1] : this.layoutsizes['px'][layout.size][0];
         this.data.card.width_unit = (layout.orientation === 'landscape') ? this.layoutsizes[this.data.grid.unit][layout.size][0] : this.layoutsizes[this.data.grid.unit][layout.size][1];
@@ -298,6 +307,7 @@ class CardRenderer {
         if (this.data.grid.enabled) {
             this.features.grid.drawGrid();
         }
+        this.features.assets.drawAssets();
     }
 
     animate() {
@@ -364,7 +374,6 @@ class CardRenderer {
                         // Picture as a background.
                         const texture = PIXI.Texture.from(cardSideRef.options.background.picture);
                         const sprite = new PIXI.Sprite(texture);
-
                         sprite.options = {};
 
                         // Stretch background to card dimension.
@@ -415,7 +424,7 @@ class CardRenderer {
                         graphic_border.options = {};
                         graphic_border.options.zIndex = 990;
 
-                        if (this.data.card.layout.size === "cr80") //cards
+                        if (this.data.card.layout.rounded)
                             graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                         else
                             graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
@@ -431,7 +440,7 @@ class CardRenderer {
                     // Create card border
                     let graphic_border = new PIXI.Graphics();
                     graphic_border.lineStyle(this.data.card.border, 0x000000, 1);
-                    if (this.data.card.layout.size === "cr80") //cards
+                    if (this.data.card.layout.rounded)
                         graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
                         graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
@@ -443,7 +452,7 @@ class CardRenderer {
                     cardSideRef.lineStyle(this.data.card.border, 0x000000, 1);
                     cardSideRef.beginFill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
 
-                    if (this.data.card.layout.size === "cr80") //cards
+                    if (this.data.card.layout.rounded)
                         cardSideRef.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
                         cardSideRef.drawRect(0, 0, this.data.card.width, this.data.card.height);

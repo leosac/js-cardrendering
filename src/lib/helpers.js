@@ -30,26 +30,32 @@ CardHelper.isHex = function (obj)
 
 CardHelper.getLayoutSizes = function(enabledCardSizes) {
     const sizes = [];
-    if (enabledCardSizes.cr80) {
-        sizes.push({value: 'cr80', text: 'create.cr80'});
+    if (!enabledCardSizes || enabledCardSizes.cr80) {
+        sizes.push({value: 'cr80', label: 'cr-80', default: {rounded: true, orientation: 'landscape'}});
     }
-    if (enabledCardSizes.res_3to2) {
-        sizes.push({value: 'res_4to3', textv: '4:3'});
+    if (!enabledCardSizes || enabledCardSizes.cr79) {
+        sizes.push({value: 'cr79', label: 'cr-79', default: {rounded: true, orientation: 'landscape'}});
     }
-    if (enabledCardSizes.res_3to2) {
-        sizes.push({value: 'res_3to2', textv: '3:2'});
+    if (!enabledCardSizes || enabledCardSizes.cr100) {
+        sizes.push({value: 'cr100', label: 'cr-100', default: {rounded: true, orientation: 'landscape'}});
     }
-    if (enabledCardSizes.res_8to5) {
-        sizes.push({value: 'res_8to5', textv: '8:5'});
+    if (!enabledCardSizes || enabledCardSizes.res_3to2) {
+        sizes.push({value: 'res_4to3', label: '4:3', default: {rounded: false}});
     }
-    if (enabledCardSizes.res_5to3) {
-        sizes.push({value: 'res_5to3', textv: '5:3'});
+    if (!enabledCardSizes || enabledCardSizes.res_3to2) {
+        sizes.push({value: 'res_3to2', label: '3:2', default: {rounded: false}});
     }
-    if (enabledCardSizes.res_16to9) {
-        sizes.push({value: 'res_16to9', textv: '16:9'});
+    if (!enabledCardSizes || enabledCardSizes.res_8to5) {
+        sizes.push({value: 'res_8to5', label: '8:5', default: {rounded: false}});
     }
-    if (enabledCardSizes.custom) {
-        sizes.push({value: 'custom', text: 'create.customSize'});
+    if (!enabledCardSizes || enabledCardSizes.res_5to3) {
+        sizes.push({value: 'res_5to3', label: '5:3', default: {rounded: false}});
+    }
+    if (!enabledCardSizes || enabledCardSizes.res_16to9) {
+        sizes.push({value: 'res_16to9', label: '16:9', default: {rounded: false}});
+    }
+    if (!enabledCardSizes || enabledCardSizes.custom) {
+        sizes.push({value: 'custom', label: 'custom', default: {rounded: false}});
     }
     return sizes;
 }

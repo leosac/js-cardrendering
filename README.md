@@ -134,7 +134,9 @@ Event triggered on error.
 
 #### layout.size
 The card layout size.
-  - `cr80` : Standard card size
+  - `cr80` : Standard CR-80 card size
+  - `cr79` : CR-79 card size
+  - `cr100` : CR-100 ID card size
   - `res_4to3` : 4/3 visual
   - `res_3to2` : 3/2 visual
   - `res_8to5` : 8/5 visual
