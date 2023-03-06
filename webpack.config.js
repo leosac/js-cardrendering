@@ -43,6 +43,9 @@ const browserConfig = {
   ],
   externals: {
     '@pixi/node': '@pixi/node'
+  },
+  optimization: {
+    minimize: false
   }
 };
 

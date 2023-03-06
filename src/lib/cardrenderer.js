@@ -504,6 +504,34 @@ class CardRenderer {
         const tpl = this.getTemplate();
         return JSON.stringify(tpl, null, 2);
     }
+
+    setCardData(data) {
+        const odata = {};
+        this.features.fields.getAllNamedFields().forEach(f => {
+            odata[f.name] = f.useMacros ? this.features.fields.resolveMacros(f.value, data) : f.value;
+        });
+        const alldata = {...odata, ...data};
+
+        const cardRef = this.graphics.card;
+        let fields = [];
+        for (let f = 0; f < cardRef.children.length; ++f) {
+            const child = cardRef.getChildAt(f);
+            if (child.options !== undefined && child.options.name !== undefined && child.options.name !== '' && child.options.type !== undefined) {
+                if (alldata[child.options.name] !== undefined) {
+                    child.options.value = alldata[child.options.name];
+                    fields.push(child);
+                }
+            }
+        }
+
+        for (let f = 0; f < fields.length; ++f) {
+            cardRef.removeChild(fields[f]);
+            this.features.fields.createField(
+                fields[f].options,
+                {x: fields[f].options.x, y: fields[f].options.y}
+            );
+        }
+    }
 }
 
 export default CardRenderer;

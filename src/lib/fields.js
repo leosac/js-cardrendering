@@ -726,6 +726,70 @@ class Fields {
         parent.box = selectgraph;
         return selectgraph;
     }
+
+    getAllNamedFields() {
+        let fields = [];
+        const cardRef = this.cardside.graphics.card;
+        for (let f = 0; f < cardRef.children.length; ++f) {
+            const child = cardRef.getChildAt(f);
+            if (child.options !== undefined && child.options.name !== undefined && child.options.name !== '' && child.options.type !== undefined) {
+                fields.push({
+                    name: child.options.name,
+                    type: child.options.type,
+                    value: child.options.value
+                });
+            }
+        }
+        return fields;
+    }
+
+    resolveVariables(input, data) {
+        return input.replace(/%%(\w*)/, (match, capture) => {
+            return (data && data[capture]) ? data[capture] : '';
+        });
+    }
+
+    resolveMacros(input, data) {
+        let res = input;
+        const funcre = /\$(?<func>\w+)\((?<params>.*)\)/g;
+        // We only support basic macro definition for now, no nested macros support.
+        let f = funcre.exec(res);
+        if (f != null && f.groups.func) {
+            const macro = f.groups.func.toUpperCase();
+            let params = [];
+            if (f.groups.params) {
+                const matches = f.groups.params.matchAll(/(,?(?<param>[ %\w]*)*,?)/g);
+                params = Array.from(matches).map(m => m.groups.param).filter(m => m != undefined);
+            }
+
+            if (macro === "TIMESTAMP" && params.length >= 1) {
+                res = Math.floor(Date.parse(params[0]).valueOf() / 1000);
+            } else if (macro === "EXPLODE" && params.length >= 2) {
+                const index = Number(params[0]);
+                let separator = ",";
+                let val = params[1];
+                if (params.length >= 3) {
+                    separator = params[1];
+                    val = params[2];
+                }
+                const parts = this.resolveVariables(val, data).split(separator);
+                if (index < parts.length) {
+                    res = parts[index];
+                } else {
+                    console.error("EXPLODE macro error. Wrong index.");
+                }
+            } else if (macro === "CONTAINS" && params.length >= 2) {
+                const success = params.length > 2 ? params[2] : params[1];
+                const error = params.length > 3 ? params[3] : '';
+                res = (this.resolveVariables(params[1], data).indexOf(params[0]) !== -1) ? success : error;
+            } else {
+                console.warn("Cannot resolve macro.", input, macro, params);
+            }
+        } else {
+            res = this.resolveVariables(res, data);
+        }
+        return res;
+    }
 }
 
 export default Fields;
