@@ -505,7 +505,7 @@ class CardRenderer {
         return JSON.stringify(tpl, null, 2);
     }
 
-    setCardData(data) {
+    async setCardData(data) {
         const odata = {};
         this.features.fields.getAllNamedFields().forEach(f => {
             odata[f.name] = f.useMacros ? this.features.fields.resolveMacros(f.value, data) : f.value;
@@ -526,7 +526,7 @@ class CardRenderer {
 
         for (let f = 0; f < fields.length; ++f) {
             cardRef.removeChild(fields[f]);
-            this.features.fields.createField(
+            await this.features.fields.createField(
                 fields[f].options,
                 {x: fields[f].options.x, y: fields[f].options.y}
             );

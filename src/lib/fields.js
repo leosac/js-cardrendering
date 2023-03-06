@@ -142,7 +142,7 @@ class Fields {
                 ...options
             });
         } else if (options.type === 'picture') {
-            field = createPictureField({
+            field = await createPictureField({
                 useMacros: false,
                 value: this.blankimg,
                 width: 75,

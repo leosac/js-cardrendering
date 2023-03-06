@@ -361,10 +361,10 @@ function createFingerprintField(options)
     return box;
 }
 
-function createPictureField(options, createOpt)
+async function createPictureField(options, createOpt)
 {
     options.type = 'picture';
-    const texture = options.value ? PIXI.Texture.from(options.value) : PIXI.Texture.WHITE;
+    const texture = options.value ? await PIXI.Assets.load(options.value) : PIXI.Texture.WHITE;
     const sprite = new PIXI.Sprite(texture);
 
     const box = new PIXI.Graphics();
