@@ -27,80 +27,73 @@ function createTextField(options)
     style['fill'] = options.color ? hexColorToSignedNumber(options.color) : 0x000000;
     style['fontFamily'] = options.fontFamily ? options.fontFamily : 'Verdana';
     style['fontSize'] = options.fontSize ? options.fontSize : '12pt';
-    if (options.fontStyle)
-    {
-        if (options.fontStyle === "Normal" || options.fontStyle === "Italic")
-        {
+    if (options.fontStyle) {
+        if (options.fontStyle === "Normal" || options.fontStyle === "Italic") {
             style['fontStyle'] = options.fontStyle;
             style['fontWeight'] = "Normal";
-        }
-        else if (options.fontStyle === "Bold")
-        {
+        } else if (options.fontStyle === "Bold") {
             style['fontStyle'] = "Normal";
             style['fontWeight'] = "Bold";
         }
-    }
-    else
+    } else {
         options.fontStyle = "Normal";
+    }
     text.style = style;
-    if (options.wordBreak)
-    {
+    if (options.wordBreak) {
         text.wordWrap = true;
         text.wordWrapWidth = options.width;
     }
-    if (options.scaleFont)
-    {
-        text.width = options.width;
-        text.height = options.height;
+    if (options.scaleFont) {
+        let scale;
+        if (options.scaleFont === true || options.scaleFont === 'always') {
+            scale = false;
+        } else if (options.scaleFont === 'exceed') {
+            scale = (text.width > options.width) || (text.height > options.height);
+        } else {
+            scale = false;
+        }
+
+        if (scale) {
+            text.width = options.width;
+            text.height = options.height;
+        }
     }
-    if (!options.autoSize)
-    {
-        while (text.width > options.width && text.text.length > 0)
-        {
+    if (!options.autoSize) {
+        while (text.width > options.width && text.text.length > 0) {
             text.text = text.text.substring(0, text.text.length - 1);
         }
     }
 
     let label;
-    if (options.colorFill !== '' && options.colorFill !== undefined)
-    {
+    if (options.colorFill !== '' && options.colorFill !== undefined) {
         const width = options.autoSize ? text.width : options.width;
         const height = options.autoSize ? text.height : options.height;
 
-        if (options.align === 'TopLeft')
-        {
+        if (options.align === 'TopLeft') {
             text.anchor.set(0, 0);
             text.position.set(0, 0);
-        } else if (options.align === 'TopCenter')
-        {
+        } else if (options.align === 'TopCenter') {
             text.anchor.set(0.5, 0);
             text.position.set(width / 2, 0);
-        } else if (options.align === 'TopRight')
-        {
+        } else if (options.align === 'TopRight') {
             text.anchor.set(1, 0);
             text.position.set(width, 0);
-        } else if (options.align === 'MiddleLeft')
-        {
+        } else if (options.align === 'MiddleLeft') {
             text.anchor.set(0, 0.5);
             text.position.set(0, height / 2);
-        } else if (options.align === 'MiddleCenter')
-        {
+        } else if (options.align === 'MiddleCenter') {
             text.anchor.set(0.5, 0.5);
             text.position.set(width / 2, height / 2);
-        } else if (options.align === 'MiddleRight')
-        {
+        } else if (options.align === 'MiddleRight') {
             text.anchor.set(1, 0.5);
             text.position.set(width, height / 2);
-        } else if (options.align === 'BottomLeft')
-        {
+        } else if (options.align === 'BottomLeft') {
             text.anchor.set(0, 1);
             text.position.set(0, height);
-        } else if (options.align === 'BottomCenter')
-        {
+        } else if (options.align === 'BottomCenter') {
             text.anchor.set(0.5, 1);
             text.position.set(width / 2, height);
-        } else if (options.align === 'BottomRight')
-        {
+        } else if (options.align === 'BottomRight') {
             text.anchor.set(1, 1);
             text.position.set(width, height);
         }
@@ -108,8 +101,7 @@ function createTextField(options)
         label = new PIXI.Graphics();
         setFieldBorder(label, options.border);
         let alpha = 1;
-        if (options.colorFill === -1)
-        {
+        if (options.colorFill === -1) {
             alpha = 0;
         }
         label.beginFill(hexColorToSignedNumber(options.colorFill), alpha);
@@ -119,76 +111,13 @@ function createTextField(options)
 
         options.width = width;
         options.height = height;
-    } else
-    {
+    } else {
         label = text;
     }
     label.position.set(options.x, options.y);
     label.options = options;
 
-    if (options.rotation > 0)
-    {
-        label.angle = options.rotation;
-    }
-    return label;
-}
-
-function createUrlLinkField(options)
-{
-    options.type = 'urllink';
-    const text = new PIXI.Text(options.value);
-    let style = [];
-    style['fill'] = options.color ? hexColorToSignedNumber(options.color) : 0x000000;
-    style['fontFamily'] = options.fontFamily ? options.fontFamily : 'Verdana';
-    style['fontSize'] = options.fontSize ? options.fontSize : '12pt';
-    if (options.fontStyle)
-    {
-        style['fontStyle'] = options.fontStyle;
-    }
-    text.style = style;
-
-    if (options.scaleFont)
-    {
-        text.width = options.width;
-        text.height = options.height;
-    }
-    if (!options.autoSize)
-    {
-        while (text.width > options.width && text.text.length > 0)
-        {
-            text.text = text.text.substring(0, text.text.length - 1);
-        }
-    }
-
-    let label;
-    if (options.colorFill !== '' && options.colorFill !== undefined)
-    {
-        const width = options.autoSize ? text.width : options.width;
-        const height = options.autoSize ? text.height : options.height;
-
-        label = new PIXI.Graphics();
-        setFieldBorder(label, options.border);
-        let alpha = 1;
-        if (options.colorFill === -1)
-        {
-            alpha = 0;
-        }
-        label.beginFill(hexColorToSignedNumber(options.colorFill), alpha);
-        label.drawRect(0, 0, width, height);
-        label.endFill();
-        label.addChild(text);
-
-        options.width = width;
-        options.height = height;
-    } else
-    {
-        label = text;
-    }
-    label.position.set(options.x, options.y);
-    label.options = options;
-
-    if (options.rotation > 0)
-    {
+    if (options.rotation > 0) {
         label.angle = options.rotation;
     }
     return label;
@@ -458,5 +387,5 @@ function createCircleShapeField(options)
 export {
     createFingerprintField, createCircleShapeField, createPictureField,
     createQRCodeField, createRectangleShapeField, createTextField,
-    createBarcodeField, createUrlLinkField, createPDF417Field, createDatamatrixField
+    createBarcodeField, createPDF417Field, createDatamatrixField
 };

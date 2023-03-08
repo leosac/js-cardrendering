@@ -7,7 +7,7 @@ import * as PIXI from "pixi.js";
 import {
     createFingerprintField, createCircleShapeField, createPictureField,
     createQRCodeField, createRectangleShapeField, createTextField,
-    createBarcodeField, createUrlLinkField, createPDF417Field, createDatamatrixField
+    createBarcodeField, createPDF417Field, createDatamatrixField
 } from './fieldFactory';
 
 class Fields {
@@ -263,30 +263,7 @@ class Fields {
                 },
                 ...options
             });
-        }
-        else if (options.type === 'urllink') {
-            field = createUrlLinkField({
-                useMacros: false,
-                value: 'https://leosac.com/',
-                color: 0x1EB9DA,
-                colorFill: -1,
-                fontFamily: 'Verdana',
-                fontSize: '12pt',
-                scaleFont: false,
-                autoSize: true,
-                width: 46,
-                height: 18,
-                x: Math.round(position.x),
-                y: Math.round(position.y),
-                zIndex: 0,
-                rotation: 0,
-                border: {
-                    width: 0,
-                    color: 0x000000
-                },
-                ...options
-            });
-        } else {
+        }  else {
             this.unselectField();
         }
 
