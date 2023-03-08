@@ -733,11 +733,7 @@ class Fields {
         for (let f = 0; f < cardRef.children.length; ++f) {
             const child = cardRef.getChildAt(f);
             if (child.options !== undefined && child.options.name !== undefined && child.options.name !== '' && child.options.type !== undefined) {
-                fields.push({
-                    name: child.options.name,
-                    type: child.options.type,
-                    value: child.options.value
-                });
+                fields.push({...child.options});
             }
         }
         return fields;
@@ -782,6 +778,10 @@ class Fields {
                 const success = params.length > 2 ? params[2] : params[1];
                 const error = params.length > 3 ? params[3] : '';
                 res = (this.resolveVariables(params[1], data).indexOf(params[0]) !== -1) ? success : error;
+            } else if (macro === "SUB" && params.length >= 3) {
+                const index = Number(params[0]);
+                const length = Number(params[1]);
+                res = this.resolveVariables(params[2], data).substring(index, index + length);
             } else {
                 console.warn("Cannot resolve macro.", input, macro, params);
             }
