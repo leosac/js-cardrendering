@@ -46,7 +46,7 @@ function createTextField(options)
     if (options.scaleFont) {
         let scale;
         if (options.scaleFont === true || options.scaleFont === 'always') {
-            scale = false;
+            scale = true;
         } else if (options.scaleFont === 'exceed') {
             scale = (text.width > options.width) || (text.height > options.height);
         } else {
