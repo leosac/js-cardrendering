@@ -604,7 +604,7 @@ class Fields {
      */
     async pasteFieldAtMousePos(ev, canvas)
     {
-        const pos = this.getMousePos(canvas.current, ev);
+        const pos = this.getMousePos(canvas, ev);
         const x = pos.x - this.cardside.graphics.card.x;
         const y = pos.y - this.cardside.graphics.card.y;
 
