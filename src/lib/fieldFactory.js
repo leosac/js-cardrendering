@@ -104,7 +104,7 @@ function createTextField(options)
         if (options.colorFill === -1) {
             alpha = 0;
         }
-        label.beginFill(hexColorToSignedNumber(options.colorFill), alpha);
+        label.beginFill(hexColorToSignedNumber(options.colorFill, true), alpha);
         label.drawRect(0, 0, width, height);
         label.endFill();
         label.addChild(text);
@@ -355,7 +355,11 @@ function createRectangleShapeField(options)
     const rectangle = new PIXI.Graphics();
     rectangle.options = options;
     setFieldBorder(rectangle, options.border);
-    rectangle.beginFill(hexColorToSignedNumber(options.color));
+    let alpha = 1;
+    if (options.color === -1) {
+        alpha = 0;
+    }
+    rectangle.beginFill(hexColorToSignedNumber(options.color, true), alpha);
     rectangle.drawRect(0, 0, options.width, options.height);
     rectangle.endFill();
     rectangle.position.set(options.x, options.y);
@@ -372,7 +376,11 @@ function createCircleShapeField(options)
     const circle = new PIXI.Graphics();
     circle.options = options;
     setFieldBorder(circle, options.border);
-    circle.beginFill(hexColorToSignedNumber(options.color));
+    let alpha = 1;
+    if (options.color === -1) {
+        alpha = 0;
+    }
+    circle.beginFill(hexColorToSignedNumber(options.color, true), alpha);
     circle.drawEllipse((options.width / 2), (options.height / 2), options.width / 2, options.height / 2);
     circle.endFill();
     circle.x = options.x;
