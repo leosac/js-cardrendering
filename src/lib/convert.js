@@ -31,6 +31,7 @@ function hexColorToSignedNumber(number, transparency) {
         }
     }
 
+    // For XML format compatibility, will be removed on a further version
     if (transparency) {
         if (number === -1) {
             number = 0x00ffffff;
@@ -40,6 +41,8 @@ function hexColorToSignedNumber(number, transparency) {
                 number = -(~number & 0x7fffffff) - 1;
             }
         }
+    } else {
+        number &= 0xffffff;
     }
 
     return number;
