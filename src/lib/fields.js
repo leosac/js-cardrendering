@@ -718,7 +718,8 @@ class Fields {
 
     resolveVariables(input, data) {
         return input.replace(/%%(\w*)/, (match, capture) => {
-            return (data && data[capture]) ? data[capture] : '';
+            const cname = capture.toLowerCase();
+            return (data && data[cname]) ? data[cname] : '';
         });
     }
 
@@ -749,7 +750,8 @@ class Fields {
                 if (index < parts.length) {
                     res = parts[index];
                 } else {
-                    console.error("EXPLODE macro error. Wrong index.");
+                    res = "";
+                    console.warn("EXPLODE macro error. Wrong index.");
                 }
             } else if (macro === "CONTAINS" && params.length >= 2) {
                 const success = params.length > 2 ? params[2] : params[1];

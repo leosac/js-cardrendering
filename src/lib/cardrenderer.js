@@ -506,9 +506,13 @@ class CardRenderer {
     }
 
     async setCardData(data) {
+        data = Object.entries(data).reduce((carry, [key, value]) => {
+            carry[key.toLowerCase()] = value;
+            return carry;
+        }, {});
         const odata = {};
         this.features.fields.getAllNamedFields().forEach(f => {
-            odata[f.name] = f.useMacros ? this.features.fields.resolveMacros(f.value, data) : f.value;
+            odata[f.name.toLowerCase()] = f.useMacros ? this.features.fields.resolveMacros(f.value, data) : f.value;
         });
         const alldata = {...odata, ...data};
 
@@ -517,8 +521,9 @@ class CardRenderer {
         for (let f = 0; f < cardRef.children.length; ++f) {
             const child = cardRef.getChildAt(f);
             if (child.options !== undefined && child.options.name !== undefined && child.options.name !== '' && child.options.type !== undefined) {
-                if (alldata[child.options.name] !== undefined) {
-                    child.options.value = alldata[child.options.name];
+                const childname = child.options.name.toLowerCase();
+                if (alldata[childname] !== undefined) {
+                    child.options.value = alldata[childname];
                     fields.push(child);
                 }
             }

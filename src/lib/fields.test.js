@@ -14,13 +14,13 @@ describe('fields.js', () => {
             expect(fields.resolveMacros("$CONTAINS(C,Test A or B,Success,Error)")).toBe("Error");
         });
         test('test $CONTAINS macro on success with variable', () => {
-            expect(fields.resolveMacros("$CONTAINS(A,%%MyField,Success)", {MyField: "Test A or B"})).toBe("Success");
+            expect(fields.resolveMacros("$CONTAINS(A,%%MyField,Success)", {myfield: "Test A or B"})).toBe("Success");
         });
         test('test $TIMESTAMP macro', () => {
             expect(fields.resolveMacros("$TIMESTAMP(2023/01/01)")).toBe(1672531200);
         });
         test('test $EXPLODE macro with variable', () => {
-            expect(fields.resolveMacros("$EXPLODE(1,%%MyField)", {MyField: "AA,BB,CC,DD"})).toBe("BB");
+            expect(fields.resolveMacros("$EXPLODE(1,%%MyField)", {myfield: "AA,BB,CC,DD"})).toBe("BB");
         });
     });
 });
