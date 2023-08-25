@@ -372,7 +372,7 @@ class CardRenderer {
                     cardSideRef.options.background.picture = cardSideRef.options.background.picture.trim();
                     if (cardSideRef.options.background.picture !== '') {
                         // Picture as a background.
-                        const texture = PIXI.Texture.from(cardSideRef.options.background.picture);
+                        const texture = PIXI.Assets.load(cardSideRef.options.background.picture);
                         const sprite = new PIXI.Sprite(texture);
                         sprite.options = {};
 
