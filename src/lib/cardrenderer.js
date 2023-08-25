@@ -163,7 +163,7 @@ class CardRenderer {
         this.graphics.card.options = {
             background: tpl ? tpl.background : {}
         };
-        this.drawCardBackground();
+        await this.drawCardBackground();
         this.graphics.card.interactive = this.options.interaction;
         this.graphics.card.buttonMode = true;
         this.graphics.card.cursor = this.options.interaction ? 'crosshair' : 'not-allowed';
@@ -352,7 +352,7 @@ class CardRenderer {
     /**
      * Draw the card background.
      */
-    drawCardBackground() {
+    async drawCardBackground() {
         const cardSideRef = this.graphics.card;
         if (cardSideRef !== null) {
             cardSideRef.clear();
@@ -372,7 +372,7 @@ class CardRenderer {
                     cardSideRef.options.background.picture = cardSideRef.options.background.picture.trim();
                     if (cardSideRef.options.background.picture !== '') {
                         // Picture as a background.
-                        const texture = PIXI.Assets.load(cardSideRef.options.background.picture);
+                        const texture = await PIXI.Assets.load(cardSideRef.options.background.picture);
                         const sprite = new PIXI.Sprite(texture);
                         sprite.options = {};
 
