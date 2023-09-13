@@ -65,15 +65,12 @@ function a2hex(str) {
     return arr.join('');
 }
 
-function inchToPixel(value) {
-    // This 96 ppi could be wrong depending the context
-    // The ratio 1.373 is arbitrary to have proper sizing at screen
-    // Changing any of this value will impact the fields x/y/width/height and general rendering result
-    return Math.round(value * 96 * 1.373);
+function inchToPixel(value, dpi = 300) {
+    return Math.round(value * dpi);
 }
 
-function pixelToInch(value) {
-    return (value / 96 * 1.373);
+function pixelToInch(value, dpi = 300) {
+    return (value / dpi);
 }
 
 function inchToMillimeter(value) {

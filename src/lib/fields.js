@@ -457,7 +457,7 @@ class Fields {
                 .lineTo(0, this.cardside.graphics.card.height);
             if (exactmatch)
             {
-                const text = new PIXI.Text('X: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, x), {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
+                const text = new PIXI.Text('X: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, x) + this.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
                 const label = new PIXI.Graphics();
                 label.lineStyle(1, 0x000000, 1);
                 label.beginFill(0xffd400, 1);
@@ -494,7 +494,7 @@ class Fields {
                     .lineTo(this.cardside.graphics.card.width, 0);
                 if (exactmatch)
                 {
-                    const text = new PIXI.Text('Y: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, y), {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
+                    const text = new PIXI.Text('Y: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, y) + this.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
                     const label = new PIXI.Graphics();
                     label.lineStyle(1, 0x000000, 1);
                     label.beginFill(0xffd400, 1);

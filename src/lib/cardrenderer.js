@@ -34,7 +34,8 @@ class CardRenderer {
                         magstripe_1to2: false,
                         magstripe_5to16: false,
                         luggagetagslot: false
-                    }
+                    },
+                    dpi: 300
                 },
                 width: 0,
                 height: 0,
@@ -79,7 +80,7 @@ class CardRenderer {
         Object.keys(this.layoutsizes.in).forEach(size => {
             const i = this.layoutsizes.in[size];
             this.layoutsizes.mm[size] = [inchToMillimeter(i[0]), inchToMillimeter(i[1])];
-            this.layoutsizes.px[size] = [inchToPixel(i[0]), inchToPixel(i[1])];
+            // layout sizes for Pixel unit is dependent on DPI. It will then be calculated on stage creation
         });
     }
 
@@ -120,6 +121,19 @@ class CardRenderer {
             ...(size ? size.default : {}),
             ...layout
         };
+
+        if (!this.data.card.layout.dpi) {
+            // Screen are usually 96 dpi
+            // The ratio 1.373 is arbitrary to have proper sizing at screen
+            // This is now for compatibility reason with legacy templates, we should probably better use 300 dpi by default and rescale for screen rendering
+            this.data.card.layout.dpi = 96 * 1.373;
+        }
+        // We convert into pixel units for further use
+        Object.keys(this.layoutsizes.in).forEach(size => {
+            const i = this.layoutsizes.in[size];
+            this.layoutsizes.px[size] = [inchToPixel(i[0], this.data.card.layout.dpi), inchToPixel(i[1], this.data.card.layout.dpi)];
+        });
+
         this.data.card.width = (layout.orientation === 'landscape') ? this.layoutsizes['px'][layout.size][0] : this.layoutsizes['px'][layout.size][1];
         this.data.card.height = (layout.orientation === 'landscape') ? this.layoutsizes['px'][layout.size][1] : this.layoutsizes['px'][layout.size][0];
         this.data.card.width_unit = (layout.orientation === 'landscape') ? this.layoutsizes[this.data.grid.unit][layout.size][0] : this.layoutsizes[this.data.grid.unit][layout.size][1];
