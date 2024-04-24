@@ -6,7 +6,7 @@
 import * as PIXI from "pixi.js";
 import { createCanvas } from "canvas";
 import bwipjs from 'bwip-js';
-import { hexColorToSignedNumber } from "./convert";
+import { decimalToHexColor, hexColorToSignedNumber, pixelToInch, inchToMillimeter } from "./convert";
 import CardHelper from './helpers';
 
 const fingerimg = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4My40NiAyODMuNDYiIGhlaWdodD0iNTEycHgiIGlkPSJMYXllcl8xIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyODMuNDYgMjgzLjQ2IiB3aWR0aD0iNTEycHgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxnPjxwYXRoIGQ9Ik0yMi44NTUsODEuMDg3ICAgIEM5LjU0MywxMDcuMDgyLDQuNjEsMTM3LjU5NiwxMC44MzIsMTY4LjQ1MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI4Ii8+PHBhdGggZD0iTTIwMC44NzUsMjEuODM1ICAgIGMtMjUuNTQzLTEyLjUzOC01NS4yNzEtMTcuMDYtODUuMzIxLTExLjAwMWMtMzQuMTM2LDYuODgyLTYyLjU5MywyNi4xODctODEuNjE4LDUyLjI1NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI4Ii8+PHBhdGggZD0iTTI3My4xNjQsMTE1LjU1NSAgICBjLTcuMDYtMzUuMDEzLTI3LjE4OS02NC4wNTYtNTQuMjg1LTgzLjA3IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjgiLz48L2c+PC9nPjxnPjxnPjxwYXRoIGQ9Ik0yNzUuODc3LDE0NC42OTUgICAgYzAuMTg0LTkuNTk0LTAuNjY2LTE5LjM1Ny0yLjY0MS0yOS4xNTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xMC45MDQsMTY4LjQzOCAgICBjMC4zODgsMS45MjEsMC44MTQsMy44MjQsMS4yNzksNS43MDkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjwvZz48L2c+PHBhdGggZD0iTTEwNy40NTQsMjcxLjI5ICBjMjkuOTc3LTM0LjExOSw0NC4yNDktODEuMzQsMzQuNTc5LTEyOS4yOTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xMTkuMTc2LDIyMC4zMzggIGMtNi41NTUsMTYuNzk4LTE2LjQ0MywzMi4xMzEtMjkuMDIsNDUuMDI2IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjgiLz48cGF0aCBkPSJNMTI2LjE4NywyNzQuODk2ICBjMjkuMDUxLTM3LjE3NSw0Mi4zMDItODYuMzMzLDMyLjI0NS0xMzYuMjA1bDAuMDUyLTAuMDE3Yy0xLjgzNi05LjEwNC0xMC43MDMtMTQuOTk2LTE5LjgwNy0xMy4xNiAgYy05LjEwMywxLjgzNi0xNC45OTQsMTAuNzAzLTEzLjE1OSwxOS44MDhsMC4xMTktMC4wMmMzLjc0NiwxOC41ODEsMy40NSwzNy4wNC0wLjI4NCw1NC40NjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xMTAuNTEsMTU2LjE0NCAgYzUuMjQ1LDM4LjcwMS05LjIxNSw3Ni4wODItMzYuMTYyLDEwMS4yOTMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xNzguNDk0LDE3MS40MzQgIGMtMC4wMzMtMTEuODktMS4yMjctMjMuOTUtMy42NjYtMzYuMDQ5bDAuMDM3LTAuMDE0Yy0zLjY1OS0xOC4xNTItMjEuMzQtMjkuOTAxLTM5LjQ5Mi0yNi4yNCAgYy0xMy41NTksMi43MzQtMjMuNTQ2LDEzLjI5Mi0yNi4yMDMsMjYuMDI3IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjgiLz48cGF0aCBkPSJNMTQ2LjI3MywyNzUuNzQ4ICBjMTYuNzQ0LTI0LjQ2OSwyNy42MDYtNTIuOTM5LDMxLjA0NS04My4wOTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xNDUuOTMsOTEuODk4ICBjLTQuNTI5LTAuMzUzLTkuMTg0LTAuMDkzLTEzLjg1OSwwLjg1Yy0yNy4yMDEsNS40ODUtNDQuODA1LDMxLjk3OS0zOS4zMiw1OS4xODJsMC4wOTQtMC4wMTYgIGM3LjQxOCwzNi43OTItNi4yOTMsNzIuOTM4LTMyLjc3OSw5NS44NzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xNjcuNjA4LDI3My4zMjQgIGMyNC4xMDgtNDEuMDk4LDMzLjc3Ni05MC44NjcsMjMuNjE3LTE0MS4yNDZsMC4wMjQtMC4wMWMtMy4wMjMtMTQuOTg4LTEyLjQyNC0yNy4wNjMtMjQuODA3LTMzLjk2NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI4Ii8+PHBhdGggZD0iTTcyLjQ1NywyMDEuOTkyICBjLTUuMjI4LDEzLjQ2MS0xMy44NzcsMjUuNDIyLTI1LjA5NSwzNC42MTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0yMDkuMDg0LDIwNy4wNiAgYzQuMTYyLTI1LjI2NiwzLjktNTEuNjk3LTEuNDYxLTc4LjI4N2wwLjAxLTAuMDA3Yy03LjMxLTM2LjI1LTQyLjYxNy01OS43MDktNzguODY1LTUyLjRjLTM2LjI1LDcuMzEtNTkuNzEsNDIuNjE4LTUyLjQsNzguODY5ICBsMC4wNzgtMC4wMTZjMS43MzYsOC42MSwyLjA4NCwxNy4xNzgsMS4xOTcsMjUuNDciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xOTAuMDA2LDI2Ni45MDkgIGM2LjA2OC0xMi40NTYsMTAuOTY3LTI1LjUyLDE0LjU4Mi0zOS4wMjEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0yMDkuNjY2LDkyLjc1OCAgYzYuODgzLDkuNDQ3LDExLjg4NywyMC40OTYsMTQuMzUsMzIuNzA1bDAuMDA1LDAuMDA0YzkuMDk1LDQ1LjEwNCw0LjU2Myw4OS43ODktMTAuNzQ0LDEyOS44MDYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xMDcuMDcsNjUuOTUyICBjNS43Ni0yLjY0LDExLjkxMy00LjY2MywxOC4zOTMtNS45NjljMjUuNjA5LTUuMTYzLDUwLjg0MiwxLjk2Miw2OS41ODgsMTcuMzE1IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjgiLz48cGF0aCBkPSJNMzYuMjc1LDIyNC4wNSAgYzE4LjkwMi0xNS4xODUsMjguODk2LTQwLjExOCwyMy43NzEtNjUuNTI0bC0wLjA2MywwLjAxNGMtNi4zNjYtMzEuNTY3LDUuOTQtNjIuNTYyLDI5LjMxNS04MS41NDQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik00MS42ODQsMTQ1Ljk3NiAgYzAuMjE1LDUuMjUsMC44NDQsMTAuNTUyLDEuOTE2LDE1Ljg2N2wwLjA1MS0wLjAxM2MzLjc1MiwxOC42MDctMy4yOTUsMzYuODgxLTE2LjgyMSw0OC4zNDMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0yNDIuNjksMTM1LjE1NiAgYy0wLjY0Mi00LjMyNi0xLjM5OS04LjY1OC0yLjI3Mi0xMi45OTRsLTAuMDItMC4wMDFDMjI5LjQ0LDY3LjgxMywxNzYuNTA2LDMyLjY0MywxMjIuMTYsNDMuNiAgYy00MS43NjUsOC40MjItNzIuMjA3LDQxLjYzNS03OS4wODgsODEuMjI5IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjgiLz48cGF0aCBkPSJNMjM2Ljk4MywyMzYuMjU4ICBjNi44MjYtMjUuNjAzLDkuNjY0LTUyLjU2NCw3LjkzMS04MC4wMjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0xNTcuNjg4LDI1LjkzMSAgYy0xMi41OTItMS43MDEtMjUuNjc1LTEuMzY2LTM4LjgzLDEuMjg3QzU1LjQ2MSw0MCwxNC40MzIsMTAxLjc1LDI3LjIxNSwxNjUuMTQ2bDAuMDM5LTAuMDFjMi4yMTksMTEtMS4yMjUsMjEuODIzLTguMzEzLDI5LjQ3IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjgiLz48cGF0aCBkPSJNMjYwLjEwNCwyMDQuODk2ICBjMy40NzktMjcuOTQ1LDIuNTg0LTU2LjkxNi0zLjI4OS04Ni4wNDFsLTAuMDMzLDAuMDAyYy04LjY5My00My4xMTItNDAuMDMxLTc1Ljg3OC03OS4xMjktODguNDEzIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjgiLz48L3N2Zz4=";
@@ -123,13 +123,21 @@ function createTextField(options)
     return label;
 }
 
-async function createBwipSprint(options, bwopts) {
+async function createBwipSprint(options, bwopts, dpi = 300) {
     try {
         let pngDataURL;
-        let height = 100;
-        let width = 100;
+        let height = (options.height) ? options.height : 100;
+        let width = (options.width) ? options.width : 100;
+        
+        if (!bwopts.height) {
+            bwopts.height = inchToMillimeter(pixelToInch(height, dpi));
+        }
+        if (!bwopts.width) {
+            bwopts.width = inchToMillimeter(pixelToInch(width, dpi));
+        }
+
         if (bwipjs.toCanvas) {
-            const canvas = createCanvas(options.height, options.width);
+            const canvas = createCanvas(height, width);
             bwipjs.toCanvas(canvas, bwopts);
             pngDataURL = canvas.toDataURL('image/png');
             height = canvas.height;
@@ -157,34 +165,34 @@ async function createBwipSprint(options, bwopts) {
     }
 }
 
-async function createBarcodeField(options)
+async function createBarcodeField(options, dpi = 300)
 {
     options.type = 'barcode';
     const bwopts = {
         bcid:        options.fontFamily.toLowerCase(),
         text:        options.value,
         includetext: false,
-        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-        barcolor: hexColorToSignedNumber(options.color)
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? decimalToHexColor(hexColorToSignedNumber(options.colorFill)) : null,
+        barcolor: decimalToHexColor(hexColorToSignedNumber(options.color))
     };
-    return await createBwipSprint(options, bwopts);
+    return await createBwipSprint(options, bwopts, dpi);
 }
 
-async function createQRCodeField(options)
+async function createQRCodeField(options, dpi = 300)
 {
     options.type = 'qrcode';
     const bwopts = {
         bcid:        'qrcode',
         text:        options.value,
         includetext: false,
-        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-        barcolor: hexColorToSignedNumber(options.color),
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? decimalToHexColor(hexColorToSignedNumber(options.colorFill)) : null,
+        barcolor: decimalToHexColor(hexColorToSignedNumber(options.color)),
         eclevel: options.ecLevel
     };
-    return await createBwipSprint(options, bwopts);
+    return await createBwipSprint(options, bwopts, dpi);
 }
 
-async function createPDF417Field(options)
+async function createPDF417Field(options, dpi = 300)
 {
     options.type = 'pdf417';
     const bwopts = {
@@ -192,14 +200,14 @@ async function createPDF417Field(options)
         text:        options.value,
         includetext: true,
         textxalign:  'center',
-        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-        barcolor: hexColorToSignedNumber(options.color),
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? decimalToHexColor(hexColorToSignedNumber(options.colorFill)) : null,
+        barcolor: decimalToHexColor(hexColorToSignedNumber(options.color)),
         eclevel: options.ecLevel
     };
-    return await createBwipSprint(options, bwopts);
+    return await createBwipSprint(options, bwopts, dpi);
 }
 
-async function createDatamatrixField(options)
+async function createDatamatrixField(options, dpi = 300)
 {
     options.type = 'datamatrix';
     options.sizeIdx = Number(options.sizeIdx);
@@ -208,8 +216,8 @@ async function createDatamatrixField(options)
         text:        options.value,
         includetext: true,
         textxalign:  'center',
-        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? hexColorToSignedNumber(options.colorFill) : null,
-        barcolor: hexColorToSignedNumber(options.color)
+        backgroundcolor: (options.colorFill && options.colorFill !== -1) ? decimalToHexColor(hexColorToSignedNumber(options.colorFill)) : null,
+        barcolor: decimalToHexColor(hexColorToSignedNumber(options.color))
     };
     
     if (options.scheme === 0)
@@ -248,7 +256,7 @@ async function createDatamatrixField(options)
                 bwopts.version = CardHelper.getDataMatrixSizeIdx().find(idx => idx.value === options.sizeIdx).label;
         }   
     }
-    return await createBwipSprint(options, bwopts);
+    return await createBwipSprint(options, bwopts, dpi);
 }
 
 function createFingerprintField(options)

@@ -213,7 +213,6 @@ class CardRenderer {
                     this.handleOnError("errorDuringFieldGeneration");
                     return;
                 }
-                this.features.fields.addFieldToCard(vfield);
             }));
         }
 

@@ -170,7 +170,7 @@ class Fields {
                 zIndex: 0,
                 rotation: 0,
                 ...options
-            });
+            }, this.cardside.data.card.layout.dpi);
         } else if (options.type === 'pdf417') {
             field = await createPDF417Field({
                 useMacros: false,
@@ -178,13 +178,14 @@ class Fields {
                 fontSize: 30,
                 width: 75,
                 height: 75,
+                color: 0x000000,
                 x: Math.round(position.x),
                 y: Math.round(position.y),
                 ecLevel: 1,
                 zIndex: 0,
                 rotation: 0,
                 ...options
-            });
+            }, this.cardside.data.card.layout.dpi);
         } else if (options.type === 'datamatrix') {
             field = await createDatamatrixField({
                 useMacros: false,
@@ -199,7 +200,7 @@ class Fields {
                 zIndex: 0,
                 rotation: 0,
                 ...options
-            });
+            }, this.cardside.data.card.layout.dpi);
         } else if (options.type === 'qrcode') {
             field = await createQRCodeField({
                 useMacros: false,
@@ -213,7 +214,7 @@ class Fields {
                 zIndex: 0,
                 rotation: 0,
                 ...options
-            });
+            }, this.cardside.data.card.layout.dpi);
         } else if (options.type === 'rectangle') {
             field = createRectangleShapeField({
                 useMacros: false,
@@ -457,7 +458,7 @@ class Fields {
                 .lineTo(0, this.cardside.graphics.card.height);
             if (exactmatch)
             {
-                const text = new PIXI.Text('X: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, x) + this.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
+                const text = new PIXI.Text('X: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, x) + this.cardside.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
                 const label = new PIXI.Graphics();
                 label.lineStyle(1, 0x000000, 1);
                 label.beginFill(0xffd400, 1);
@@ -494,7 +495,7 @@ class Fields {
                     .lineTo(this.cardside.graphics.card.width, 0);
                 if (exactmatch)
                 {
-                    const text = new PIXI.Text('Y: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, y) + this.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
+                    const text = new PIXI.Text('Y: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, y) + this.cardside.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
                     const label = new PIXI.Graphics();
                     label.lineStyle(1, 0x000000, 1);
                     label.beginFill(0xffd400, 1);
@@ -667,21 +668,19 @@ class Fields {
         this.cardside.sortByZIndex();
     }
 
-    updateField(field) {
+    updateField(field, createOpt = {}) {
         if (this.cardside.data.fields.selected.length > 0)
         {
             Object.keys(field).forEach(key => {
                 this.cardside.data.fields.selected[0].options[key] = field[key];
             });
 
-            // When we edit a picture field, we'll automatically resize the
-            // image.
-            const createOpt = {
-                autoSizeImg: true,
+            this.recreateSelectedField({
+                autoSizeImg: false,
                 maxWidth: this.cardside.data.card.width,
-                maxHeight: this.cardside.data.card.height
-            };
-            this.recreateSelectedField(createOpt);
+                maxHeight: this.cardside.data.card.height,
+                ...createOpt
+            });
 
             this.cardside.handleOnChange();
         }
