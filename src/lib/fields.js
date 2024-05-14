@@ -141,7 +141,7 @@ class Fields {
                     color: 0x000000
                 },
                 ...options
-            });
+            }, this.cardside.data.grid.scale);
         } else if (options.type === 'picture') {
             field = await createPictureField({
                 useMacros: false,

@@ -19,7 +19,7 @@ function setFieldBorder(box, border) {
     }
 }
 
-function createTextField(options)
+function createTextField(options, scale = 1)
 {
     options.type = 'label';
     const text = new PIXI.Text(options.value);
@@ -39,6 +39,7 @@ function createTextField(options)
         options.fontStyle = "Normal";
     }
     text.style = style;
+    text.resolution = scale;
     if (options.wordBreak) {
         text.wordWrap = true;
         text.wordWrapWidth = options.width;
@@ -153,8 +154,8 @@ async function createBwipSprint(options, bwopts, dpi = 300) {
         sprite.y = options.y;
         sprite.height = height;
         sprite.width = width;
-        options.height = sprite.height;
-        options.width = sprite.width;
+        options.height = height;
+        options.width = width;
         if (options.rotation > 0) {
             sprite.angle = options.rotation;
         }

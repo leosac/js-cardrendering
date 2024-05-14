@@ -152,8 +152,9 @@ class CardRenderer {
             this.data.grid.ruler = false;
             this.data.grid.scale = 1 - ((width - parentRectoContainer.offsetWidth) / width);
         } else {
-            if (resize)
+            if (resize) {
                 this.data.grid.scale = 1;
+            }
         }
         if (this.data.grid.ruler) {
             width += rulerwidth + rulerspacing * 2;
