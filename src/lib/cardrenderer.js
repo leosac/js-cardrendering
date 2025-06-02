@@ -5,7 +5,7 @@
  **/
 import * as PIXI from "pixi.js";
 import { createCanvas } from "canvas";
-import { hexColorToSignedNumber, inchToPixel, inchToMillimeter } from './convert';
+import { hexColorToSignedNumber, inchToPixel, inchToMillimeter, pixelToInch } from './convert';
 import Fields from './fields';
 import Grid from './grid';
 import Assets from './assets';
@@ -128,6 +128,20 @@ class CardRenderer {
             // This is now for compatibility reason with legacy templates, we should probably better use 300 dpi by default and rescale for screen rendering
             this.data.card.layout.dpi = 96 * 1.373;
         }
+
+        if (this.data.card.layout.size === 'custom') {
+            if (this.data.card.layout.width) {
+                this.layoutsizes.px['custom'][0] = this.data.card.layout.width;
+                this.layoutsizes.in['custom'][0] = pixelToInch(this.data.card.layout.width, this.data.card.layout.dpi);
+                this.layoutsizes.mm['custom'][0] = inchToMillimeter(this.layoutsizes.in['custom'][0]);
+            }
+            if (this.data.card.layout.height) {
+                this.layoutsizes.px['custom'][1] = this.data.card.layout.height;
+                this.layoutsizes.in['custom'][1] = pixelToInch(this.data.card.layout.height, this.data.card.layout.dpi);
+                this.layoutsizes.mm['custom'][1] = inchToMillimeter(this.layoutsizes.in['custom'][1]);
+            }
+        }
+
         // We convert into pixel units for further use
         Object.keys(this.layoutsizes.in).forEach(size => {
             const i = this.layoutsizes.in[size];
