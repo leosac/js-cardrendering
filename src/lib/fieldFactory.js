@@ -294,15 +294,32 @@ function createFingerprintField(options)
     // the texture is loaded.
     else
     {
-        texture.on("update", configureImage);
+        texture.once("update", configureImage);
     }
     return box;
+}
+
+async function createTextureFromDataUrl(url) {
+    try
+    {
+        return await PIXI.Assets.load(url);
+    }
+    catch
+    {
+        await PIXI.Assets.unload(url);
+        return await PIXI.Assets.load(url);
+    }
 }
 
 async function createPictureField(options, createOpt)
 {
     options.type = 'picture';
-    const texture = options.value ? await PIXI.Assets.load(options.value) : PIXI.Texture.WHITE;
+    let texture;
+    if (options.value) {
+        texture = await createTextureFromDataUrl(options.value);
+    } else {
+        texture = PIXI.Texture.WHITE;
+    }
     const sprite = new PIXI.Sprite(texture);
 
     const box = new PIXI.Graphics();
@@ -353,7 +370,7 @@ async function createPictureField(options, createOpt)
     // the texture is loaded.
     else
     {
-        texture.on("update", configureImage);
+        texture.once("update", configureImage);
     }
     return box;
 }

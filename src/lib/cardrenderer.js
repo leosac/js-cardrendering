@@ -84,6 +84,24 @@ class CardRenderer {
         });
     }
 
+    destroy(doptions = true) {
+        this.options.onError = null;
+        this.options.onChange = null;
+        this.features = null;
+        this.data = null;
+        if (this.graphics.stage) {
+            if (!this.options.stage) {
+                this.graphics.stage.destroy(doptions);
+                this.graphics.stage = null;
+            } else {
+                this.options.stage.children.forEach((f) => {
+                    f.destroy(doptions);
+                    this.options.stage.removeChildren();
+                })
+            }
+        }
+    }
+
     handleOnError(error) {
         if (this.options.onError) {
             this.options.onError(error);
@@ -297,31 +315,35 @@ class CardRenderer {
 
             this.graphics.card.position.set(rulerwidth + rulerspacing, rulerwidth + rulerspacing);
 
-            this.graphics.card.on('mousemove', (event) =>
+            if (this.options.interaction) {
+                this.graphics.card.on('mousemove', (event) =>
+                    {
+                        if (this.options.onCardMouseMove) {
+                            this.options.onCardMouseMove(event, this, topRuler, leftRuler);
+                        }
+                    }).on('touchmove', (event) =>
+                    {
+                        if (this.options.onCardMouseMove) {
+                            this.options.onCardMouseMove(event, this, topRuler, leftRuler);
+                        }
+                    });
+            }
+        }
+        else
+        {
+            if (this.options.interaction) {
+                this.graphics.card.on('mousemove', (event) =>
                 {
                     if (this.options.onCardMouseMove) {
-                        this.options.onCardMouseMove(event, this, topRuler, leftRuler);
+                        this.options.onCardMouseMove(event, this, undefined, undefined);
                     }
                 }).on('touchmove', (event) =>
                 {
                     if (this.options.onCardMouseMove) {
-                        this.options.onCardMouseMove(event, this, topRuler, leftRuler);
+                        this.options.onCardMouseMove(event, this, undefined, undefined);
                     }
                 });
-        }
-        else
-        {
-            this.graphics.card .on('mousemove', (event) =>
-            {
-                if (this.options.onCardMouseMove) {
-                    this.options.onCardMouseMove(event, this, undefined, undefined);
-                }
-            }).on('touchmove', (event) =>
-            {
-                if (this.options.onCardMouseMove) {
-                    this.options.onCardMouseMove(event, this, undefined, undefined);
-                }
-            });
+            }
         }
         this.graphics.card.position.x += this.data.card.border;
         this.graphics.card.position.y += this.data.card.border - 1;
@@ -338,15 +360,21 @@ class CardRenderer {
         this.features.assets.drawAssets();
     }
 
-    animate() {
-        if (this.graphics.renderer && this.graphics.stage) {
+    animateOnce() {
+        if (this.graphics && this.graphics.renderer && this.graphics.stage) {
             this.graphics.renderer.render(this.graphics.stage);
+            return true;
         }
+        return false;
+    }
 
-        if (typeof requestAnimationFrame === 'function') {
-            requestAnimationFrame(() => this.animate());
-        } else {
-            setImmediate(() => this.animate());
+    animate() {
+        if (this.animateOnce()) {
+            if (typeof requestAnimationFrame === 'function') {
+                requestAnimationFrame(() => this.animate());
+            } else {
+                setImmediate(() => this.animate());
+            }
         }
     }
 
@@ -440,7 +468,7 @@ class CardRenderer {
                             // Or we set a callback to adjust the scale when the texture
                             // is loaded.
                             else {
-                                texture.on("update", setScaleFct);
+                                texture.once("update", setScaleFct);
                             }
                         }
 
