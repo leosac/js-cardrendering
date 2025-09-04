@@ -6,6 +6,7 @@
 import * as PIXI from "pixi.js";
 import { createCanvas } from "canvas";
 import { hexColorToSignedNumber, inchToPixel, inchToMillimeter, pixelToInch } from './convert';
+import { createTextureFromDataUrl } from './fieldFactory';
 import Fields from './fields';
 import Grid from './grid';
 import Assets from './assets';
@@ -419,6 +420,7 @@ class CardRenderer {
                 bgComponentRef.forEach((bgc) =>
                 {
                     cardSideRef.removeChild(bgc);
+                    bgc.destroy(true);
                 });
             }
 
@@ -428,7 +430,7 @@ class CardRenderer {
                     cardSideRef.options.background.picture = cardSideRef.options.background.picture.trim();
                     if (cardSideRef.options.background.picture !== '') {
                         // Picture as a background.
-                        const texture = await PIXI.Assets.load(cardSideRef.options.background.picture);
+                        const texture = await createTextureFromDataUrl(cardSideRef.options.background.picture);
                         const sprite = new PIXI.Sprite(texture);
                         sprite.options = {};
 
@@ -587,6 +589,7 @@ class CardRenderer {
 
         for (let f = 0; f < fields.length; ++f) {
             cardRef.removeChild(fields[f]);
+            fields[f].destroy(true);
             await this.features.fields.createField(
                 fields[f].options,
                 {x: fields[f].options.x, y: fields[f].options.y}

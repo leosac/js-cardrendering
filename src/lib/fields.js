@@ -22,6 +22,7 @@ class Fields {
         {
             this.cardside.graphics.highlights.forEach((f) => {
                 this.cardside.graphics.card.removeChild(f);
+                f.destroy(true);
             });
         }
         this.cardside.graphics.highlights = [];

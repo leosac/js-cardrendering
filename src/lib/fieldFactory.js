@@ -147,7 +147,7 @@ async function createBwipSprint(options, bwopts, dpi = 300) {
             const png = await bwipjs.toBuffer(bwopts);
             pngDataURL = "data:image/png;base64," + png.toString("base64");
         }
-        const texture = await PIXI.Assets.load(pngDataURL);
+        const texture = await createTextureFromDataUrl(pngDataURL);
         const sprite = PIXI.Sprite.from(texture);
         sprite.options = options;
         sprite.x = options.x;
@@ -421,5 +421,6 @@ function createCircleShapeField(options)
 export {
     createFingerprintField, createCircleShapeField, createPictureField,
     createQRCodeField, createRectangleShapeField, createTextField,
-    createBarcodeField, createPDF417Field, createDatamatrixField
+    createBarcodeField, createPDF417Field, createDatamatrixField,
+    createTextureFromDataUrl
 };
