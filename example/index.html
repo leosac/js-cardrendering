@@ -135,6 +135,54 @@
             });
           }
 
+          function loadTemplate3() {
+            loadTemplate({
+              fields: [
+                {
+                  useMacros: false,
+                  value: "This is a simple test for word break into two lines",
+                  color: 0,
+                  colorFill: -1,
+                  fontFamily: "Verdana",
+                  fontSize: "12pt",
+                  fontStyle: "Normal",
+                  align: "TopLeft",
+                  scaleFont: false,
+                  autoSize: false,
+                  wordBreak: true,
+                  maxLength: 0,
+                  width: 150,
+                  height: 55,
+                  x: 57,
+                  y: 29,
+                  zIndex: 0,
+                  rotation: 0,
+                  border: {
+                    width: 1,
+                    color: 0
+                  },
+                  type: "label"
+                },
+                {
+                  useMacros: false,
+                  color: 16777215,
+                  width: 256,
+                  height: 256,
+                  x: 186,
+                  y: 256,
+                  zIndex: 0,
+                  rotation: 0,
+                  border: {
+                    width: 1,
+                    color: 0
+                  },
+                  type: "rectangle"
+                }
+              ],
+              background: {}
+            });
+          }
+
           loadTemplate();
         </script>
       </div>
@@ -143,6 +191,7 @@
         <p><button onclick="loadTemplate()">Empty card</button></p>
         <p><button onclick="loadTemplate1()">Template 1: Red card with Label and QR Code</button></p>
         <p><button onclick="loadTemplate2()">Template 2: Blue card with Shapes</button></p>
+        <p><button onclick="loadTemplate3()">Template 3: Out of range single Shape</button></p>
       </div>
     </div>
 

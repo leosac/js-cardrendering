@@ -41,8 +41,9 @@ function createTextField(options, scale = 1)
     text.style = style;
     text.resolution = scale;
     if (options.wordBreak) {
-        text.wordWrap = true;
-        text.wordWrapWidth = options.width;
+        text.style.wordWrap = true;
+        text.style.wordWrapWidth = options.width;
+        text.style.breakWords = true;
     }
     if (options.scaleFont) {
         let scale;
@@ -60,7 +61,7 @@ function createTextField(options, scale = 1)
         }
     }
     if (!options.autoSize) {
-        while (text.width > options.width && text.text.length > 0) {
+        while ((text.width > options.width || (options.wordBreak && text.height > options.height)) && text.text.length > 0) {
             text.text = text.text.substring(0, text.text.length - 1);
         }
     }
