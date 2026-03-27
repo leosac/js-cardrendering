@@ -4,8 +4,8 @@ pipeline {
 	    stage('Build') {
             steps {
                 nodejs(nodeJSInstallationName: 'node20') {
-                    sh 'npm ci'
-					sh 'npm run build --if-present'
+                    sh 'yarn install --frozen-lockfile'
+					sh 'yarn run build'
                 }
             }
         }
