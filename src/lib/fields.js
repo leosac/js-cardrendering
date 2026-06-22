@@ -652,12 +652,14 @@ class Fields {
     {
         if (this.cardside.data.fields.selected.length > 0)
         {
-            const options = this.cardside.data.fields.selected[0].options;
+            const selectedField = this.cardside.data.fields.selected[0];
+            const options = selectedField.options;
+            selectedField.parent.removeChild(selectedField);
+            selectedField.destroy();
+
             let generatedField = await this.cardside.features.fields.createField(options, undefined, createOpt);
             if (generatedField)
             {
-                this.cardside.data.fields.selected[0].parent.removeChild(this.cardside.data.fields.selected[0]);
-                this.cardside.data.fields.selected[0].destroy();
                 this.cardside.data.fields.selected[0] = generatedField;
                 this.cardside.data.fields.selected[0].selected = this.createSelectedSprite(this.cardside.data.fields.selected[0]);
                 this.cardside.data.fields.selected[0].addChild(this.cardside.data.fields.selected[0].selected);
@@ -670,14 +672,14 @@ class Fields {
         this.cardside.sortByZIndex();
     }
 
-    updateField(field, createOpt = {}) {
+    async updateField(field, createOpt = {}) {
         if (this.cardside.data.fields.selected.length > 0)
         {
             Object.keys(field).forEach(key => {
                 this.cardside.data.fields.selected[0].options[key] = field[key];
             });
 
-            this.recreateSelectedField({
+            await this.recreateSelectedField({
                 autoSizeImg: false,
                 maxWidth: this.cardside.data.card.width,
                 maxHeight: this.cardside.data.card.height,

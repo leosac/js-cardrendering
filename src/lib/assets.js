@@ -34,8 +34,7 @@ class Assets {
     createSafetyArea() {
         const offset = 15;
         const asset = new PIXI.Graphics();
-        asset.lineStyle(1, 0x7ED321, 1);
-        asset.drawRoundedRect(offset, offset, this.cardside.data.card.width - (2 * offset), this.cardside.data.card.height - (2 * offset), 20);
+        asset.roundRect(offset, offset, this.cardside.data.card.width - (2 * offset), this.cardside.data.card.height - (2 * offset), 20).stroke({ width: 1, color: 0x7ED321 });
         asset.options = {};
         asset.options.zIndex = 1000;
         return asset;

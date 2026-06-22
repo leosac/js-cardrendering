@@ -198,7 +198,7 @@ class CardRenderer {
             this.graphics.renderer = this.options.renderer;
         } else {
             //Create the renderer
-            this.graphics.renderer = PIXI.autoDetectRenderer({width: width * this.data.grid.scale,
+            this.graphics.renderer = await PIXI.autoDetectRenderer({width: width * this.data.grid.scale,
                 heigth: height * this.data.grid.scale,
                 transparent: true,
                 clearBeforeRender: true,
@@ -256,10 +256,7 @@ class CardRenderer {
             const rulerdrawfactor = (rulerstep >= 1) ? 10 * rulerstep : 1;
 
             const topRuler = new PIXI.Graphics();
-            topRuler.lineStyle(1, 0x000000, 1);
-            topRuler.beginFill(0xa8a8a8);
-            topRuler.drawRect(0, 0, this.data.card.width + rulerspacing * 2, rulerwidth);
-            topRuler.endFill();
+            topRuler.rect(0, 0, this.data.card.width + rulerspacing * 2, rulerwidth).fill(0xa8a8a8).stroke({ width: 1, color: 0x000000 });
             for (let i = 0; i < this.data.card.width_unit + rulerstep; i += rulerstep)
             {
                 i = Math.round(i * 10000) / 10000;
@@ -478,14 +475,14 @@ class CardRenderer {
                         cardSideRef.addChild(sprite);
 
                         let graphic_border = new PIXI.Graphics();
-                        graphic_border.lineStyle(this.data.card.border, 0x000000, 1);
+                        graphic_border.stroke({ width: this.data.card.border, color: 0x000000 });
                         graphic_border.options = {};
                         graphic_border.options.zIndex = 990;
 
                         if (this.data.card.layout.rounded)
-                            graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
+                            graphic_border.roundRect(0, 0, this.data.card.width, this.data.card.height, 20);
                         else
-                            graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
+                            graphic_border.rect(0, 0, this.data.card.width, this.data.card.height);
                         cardSideRef.addChild(graphic_border);
 
                         // Removed next time we draw the background.
@@ -497,25 +494,23 @@ class CardRenderer {
                 if (!hasBackground) {
                     // Create card border
                     let graphic_border = new PIXI.Graphics();
-                    graphic_border.lineStyle(this.data.card.border, 0x000000, 1);
+                    graphic_border.stroke({ width: this.data.card.border, color: 0x000000 });
                     if (this.data.card.layout.rounded)
-                        graphic_border.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
+                        graphic_border.roundRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
-                        graphic_border.drawRect(0, 0, this.data.card.width, this.data.card.height);
+                        graphic_border.rect(0, 0, this.data.card.width, this.data.card.height);
                     graphic_border.options = {};
                     graphic_border.options.zIndex = 1000;
                     cardSideRef.addChild(graphic_border);
 
-                    // User colored (white included) background.
-                    cardSideRef.lineStyle(this.data.card.border, 0x000000, 1);
-                    cardSideRef.beginFill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
-
                     if (this.data.card.layout.rounded)
-                        cardSideRef.drawRoundedRect(0, 0, this.data.card.width, this.data.card.height, 20);
+                        cardSideRef.roundRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
-                        cardSideRef.drawRect(0, 0, this.data.card.width, this.data.card.height);
-                    cardSideRef.endFill();
-                    hasBackground = true;
+                        cardSideRef.rect(0, 0, this.data.card.width, this.data.card.height);
+
+                    // User colored (white included) background.
+                    cardSideRef.stroke({ width: this.data.card.border, color: 0x000000 });
+                    cardSideRef.fill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
                 }
             }
         }
