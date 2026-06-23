@@ -199,21 +199,20 @@ class CardRenderer {
         } else {
             //Create the renderer
             this.graphics.renderer = await PIXI.autoDetectRenderer({width: width * this.data.grid.scale,
-                heigth: height * this.data.grid.scale,
-                transparent: true,
+                height: height * this.data.grid.scale,
+                backgroundAlpha: 0,
                 clearBeforeRender: true,
-                view: this.options.canvas
+                canvas: this.options.canvas
             });
         }
         //Resize Canvas with real size
         this.graphics.renderer.resize(width * this.data.grid.scale , height * this.data.grid.scale);
-        this.graphics.card = new PIXI.Graphics();
+        this.graphics.card = new PIXI.Container();
         this.graphics.card.options = {
             background: tpl ? tpl.background : {}
         };
         await this.drawCardBackground();
-        this.graphics.card.interactive = this.options.interaction;
-        this.graphics.card.buttonMode = true;
+        this.graphics.card.eventMode = this.options.interaction ? 'static' : 'none';
         this.graphics.card.cursor = this.options.interaction ? 'crosshair' : 'not-allowed';
         if (this.options.interaction) {
             this.graphics.card
@@ -255,8 +254,10 @@ class CardRenderer {
             const rulerstep = (this.layoutsizes[this.data.grid.unit][layout.size][0] > 20) ? ((this.layoutsizes[this.data.grid.unit][layout.size][0] > 200) ? 10 : 1) : 0.1;
             const rulerdrawfactor = (rulerstep >= 1) ? 10 * rulerstep : 1;
 
-            const topRuler = new PIXI.Graphics();
-            topRuler.rect(0, 0, this.data.card.width + rulerspacing * 2, rulerwidth).fill(0xa8a8a8).stroke({ width: 1, color: 0x000000 });
+            const topRuler = new PIXI.Container();
+            const bgTopRuler = new PIXI.Graphics();
+            bgTopRuler.rect(0, 0, this.data.card.width + rulerspacing * 2, rulerwidth).fill(0xa8a8a8).stroke({ width: 1, color: 0x000000 });
+            topRuler.addChild(bgTopRuler);
             for (let i = 0; i < this.data.card.width_unit + rulerstep; i += rulerstep)
             {
                 i = Math.round(i * 10000) / 10000;
@@ -264,12 +265,12 @@ class CardRenderer {
                 const ipx = i * (this.data.card.width / this.data.card.width_unit);
                 const drawindice = (Math.round((i % rulerdrawfactor) * 10000) < 1);
                 const stepheight = drawindice ? (rulerwidth / 2) : (rulerwidth / 4);
-                topRuler.lineStyle(1, 0x000000)
-                    .moveTo(rulerspacing + ipx, 0)
-                    .lineTo(rulerspacing + ipx, stepheight);
+                bgTopRuler.moveTo(rulerspacing + ipx, 0)
+                    .lineTo(rulerspacing + ipx, stepheight)
+                    .stroke({width: 1, color: 0x000000});
                 if (drawindice)
                 {
-                    const indice = new PIXI.Text(i, {fontFamily: 'Arial', fontSize: '8pt', fill: 0x000000});
+                    const indice = new PIXI.Text({text: i, style: {fontFamily: 'Arial', fontSize: '8pt', fill: 0x000000}});
                     indice.position.set(rulerspacing + ipx - 4, stepheight + 2);
                     topRuler.addChild(indice);
                 }
@@ -280,11 +281,10 @@ class CardRenderer {
             topRuler.options.zIndex = 999;
             this.graphics.stage.addChild(topRuler);
 
-            const leftRuler = new PIXI.Graphics();
-            leftRuler.lineStyle(1, 0x000000, 1);
-            leftRuler.beginFill(0xa8a8a8);
-            leftRuler.drawRect(0, 0, rulerwidth, this.data.card.height + rulerspacing * 2);
-            leftRuler.endFill();
+            const leftRuler = new PIXI.Container();
+            const bgLeftRuler = new PIXI.Graphics();
+            bgLeftRuler.rect(0, 0, rulerwidth, this.data.card.height + rulerspacing * 2).fill(0xa8a8a8).stroke({ width: 1, color: 0x000000 });
+            leftRuler.addChild(bgLeftRuler);
             for (let i = 0; i < this.data.card.height + rulerstep; i += rulerstep)
             {
                 i = Math.round(i * 10000) / 10000;
@@ -292,12 +292,12 @@ class CardRenderer {
                 const ipx = i * (this.data.card.height / this.data.card.height_unit);
                 const drawindice = (Math.round((i % rulerdrawfactor) * 10000) < 1);
                 const stepheight = drawindice ? (rulerwidth / 2) : (rulerwidth / 4);
-                leftRuler.lineStyle(1, 0x000000)
-                    .moveTo(0, rulerspacing + ipx)
-                    .lineTo(stepheight, rulerspacing + ipx);
+                bgLeftRuler.moveTo(0, rulerspacing + ipx)
+                    .lineTo(stepheight, rulerspacing + ipx)
+                    .stroke({width: 1, color: 0x000000});
                 if (drawindice)
                 {
-                    const indice = new PIXI.Text(i, {fontFamily: 'Arial', fontSize: '8pt', fill: 0x000000});
+                    const indice = new PIXI.Text({text: i, style: {fontFamily: 'Arial', fontSize: '8pt', fill: 0x000000}});
                     indice.position.set(stepheight + 2, rulerspacing + ipx - 4);
                     if (!indice.options)
                         indice.options = {};
@@ -409,7 +409,7 @@ class CardRenderer {
     async drawCardBackground() {
         const cardSideRef = this.graphics.card;
         if (cardSideRef !== null) {
-            cardSideRef.clear();
+            cardSideRef.removeChildren();
 
             const bgComponentRef = this.graphics.bg_components;
             // Remove previous bg component
@@ -461,7 +461,7 @@ class CardRenderer {
                             };
                             // Either the texture has already been loaded, in that case
                             // we set the scale right now...
-                            if (texture.baseTexture.hasLoaded) {
+                            if (texture.source.hasLoaded) {
                                 setScaleFct();
                             }
                             // Or we set a callback to adjust the scale when the texture
@@ -474,7 +474,7 @@ class CardRenderer {
                         sprite.options.zIndex = -1000; // Far behind, as it is the background...
                         cardSideRef.addChild(sprite);
 
-                        let graphic_border = new PIXI.Graphics();
+                        const graphic_border = new PIXI.Graphics();
                         graphic_border.stroke({ width: this.data.card.border, color: 0x000000 });
                         graphic_border.options = {};
                         graphic_border.options.zIndex = 990;
@@ -493,24 +493,29 @@ class CardRenderer {
                 }
                 if (!hasBackground) {
                     // Create card border
-                    let graphic_border = new PIXI.Graphics();
+                    const graphic_border = new PIXI.Graphics();
                     graphic_border.stroke({ width: this.data.card.border, color: 0x000000 });
                     if (this.data.card.layout.rounded)
                         graphic_border.roundRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
                         graphic_border.rect(0, 0, this.data.card.width, this.data.card.height);
-                    graphic_border.options = {};
-                    graphic_border.options.zIndex = 1000;
+                    graphic_border.options = {
+                        zIndex: 1000
+                    };
                     cardSideRef.addChild(graphic_border);
 
+                    const bg = new PIXI.Graphics();
+                    bg.options = {
+                        zIndex: -1
+                    };
                     if (this.data.card.layout.rounded)
-                        cardSideRef.roundRect(0, 0, this.data.card.width, this.data.card.height, 20);
+                        bg.roundRect(0, 0, this.data.card.width, this.data.card.height, 20);
                     else
-                        cardSideRef.rect(0, 0, this.data.card.width, this.data.card.height);
-
+                        bg.rect(0, 0, this.data.card.width, this.data.card.height);
                     // User colored (white included) background.
-                    cardSideRef.stroke({ width: this.data.card.border, color: 0x000000 });
-                    cardSideRef.fill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
+                    bg.fill(cardSideRef.options.background.color ? hexColorToSignedNumber(cardSideRef.options.background.color) : 0xffffff);
+                    bg.stroke({ width: this.data.card.border, color: 0x000000 });
+                    cardSideRef.addChild(bg);
                 }
             }
         }
@@ -523,16 +528,16 @@ class CardRenderer {
 
         this.graphics.renderer.render(this.graphics.stage);
 
-        const resizedCanvas = createCanvas(this.graphics.renderer.view.width / 2, this.graphics.renderer.view.height / 2);
+        const resizedCanvas = createCanvas(this.graphics.renderer.canvas.width / 2, this.graphics.renderer.canvas.height / 2);
         const resizedContext = resizedCanvas.getContext("2d");
 
         if (this.data.grid.ruler)
         {
-            resizedContext.drawImage(this.graphics.renderer.view, this.graphics.card.position.x - this.data.card.border, this.graphics.card.position.y - this.data.card.border, this.graphics.card.width + this.data.card.border, this.graphics.card.height + this.data.card.border, 0, 0, resizedCanvas.width, resizedCanvas.height);
+            resizedContext.drawImage(this.graphics.renderer.canvas, this.graphics.card.position.x - this.data.card.border, this.graphics.card.position.y - this.data.card.border, this.graphics.card.width + this.data.card.border, this.graphics.card.height + this.data.card.border, 0, 0, resizedCanvas.width, resizedCanvas.height);
         }
         else
         {
-            resizedContext.drawImage(this.graphics.renderer.view, 0, 0, resizedCanvas.width, resizedCanvas.height);
+            resizedContext.drawImage(this.graphics.renderer.canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
         }
         return resizedCanvas;
     }

@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -10,6 +11,7 @@ const nodeConfig = {
     library: 'cardrendering',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, 'dist'),
+    clean: true
   },
   plugins: [
     new ESLintPlugin()
@@ -33,6 +35,9 @@ const browserConfig = {
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
+    }),
     new ESLintPlugin(),
     new HtmlWebpackPlugin({
       title: 'JS Card Rendering',

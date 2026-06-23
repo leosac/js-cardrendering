@@ -15,14 +15,15 @@ function setFieldBorder(box, border) {
     const width = Number(border.width);
     if (width > 0)
     {
-        box.lineStyle(width, hexColorToSignedNumber(border.color), 1);
+        box.stroke({width: width, color: hexColorToSignedNumber(border.color)});
     }
 }
 
 function createTextField(options, scale = 1)
 {
     options.type = 'label';
-    const text = new PIXI.Text(options.value);
+    const fieldContainer = new PIXI.Container();
+    const text = new PIXI.Text({text: options.value});
     let style = [];
     style['fill'] = options.color ? hexColorToSignedNumber(options.color) : 0x000000;
     style['fontFamily'] = options.fontFamily ? options.fontFamily : 'Verdana';
@@ -66,7 +67,6 @@ function createTextField(options, scale = 1)
         }
     }
 
-    let label;
     if (options.colorFill !== '' && options.colorFill !== undefined) {
         const width = options.autoSize ? text.width : options.width;
         const height = options.autoSize ? text.height : options.height;
@@ -100,29 +100,26 @@ function createTextField(options, scale = 1)
             text.position.set(width, height);
         }
 
-        label = new PIXI.Graphics();
-        setFieldBorder(label, options.border);
+        const bg = new PIXI.Graphics();
         let alpha = 1;
         if (options.colorFill === -1) {
             alpha = 0;
         }
-        label.beginFill(hexColorToSignedNumber(options.colorFill), alpha);
-        label.drawRect(0, 0, width, height);
-        label.endFill();
-        label.addChild(text);
+        bg.rect(0, 0, width, height).fill({color: hexColorToSignedNumber(options.colorFill), alpha: alpha});
+        setFieldBorder(bg, options.border);
+        fieldContainer.addChild(bg);
 
         options.width = width;
         options.height = height;
-    } else {
-        label = text;
     }
-    label.position.set(options.x, options.y);
-    label.options = options;
+    fieldContainer.position.set(options.x, options.y);
+    fieldContainer.options = options;
 
     if (options.rotation > 0) {
-        label.angle = options.rotation;
+        fieldContainer.angle = options.rotation;
     }
-    return label;
+    fieldContainer.addChild(text);
+    return fieldContainer;
 }
 
 async function createBwipSprint(options, bwopts, dpi = 300) {
@@ -264,6 +261,7 @@ async function createDatamatrixField(options, dpi = 300)
 function createFingerprintField(options)
 {
     options.type = 'fingerprint';
+    const fieldContainer = new PIXI.Container();
     const texture = PIXI.Texture.from(fingerimg);
     const sprite = new PIXI.Sprite(texture);
 
@@ -272,22 +270,20 @@ function createFingerprintField(options)
     {
         sprite.width = options.width;
         sprite.height = options.height;
-        setFieldBorder(box, options.border);
         if (options.rotation > 0)
         {
             sprite.angle = options.rotation;
         }
-        box.beginFill(0, 0);
-        box.drawRect(0, 0, options.width, options.height);
-        box.endFill();
-        box.addChild(sprite);
+        box.rect(0, 0, options.width, options.height).fill({color: 0x000000, alpha: 0});
+        setFieldBorder(box, options.border);
+        fieldContainer.addChild(sprite);
 
-        box.position.set(options.x, options.y);
-        box.options = options;
+        fieldContainer.position.set(options.x, options.y);
+        fieldContainer.options = options;
     };
 
     // Image is ready, apply options etc now.
-    if (texture.baseTexture.valid)
+    if (texture.width > 0 && texture.height > 0)
     {
         configureImage();
     }
@@ -295,9 +291,10 @@ function createFingerprintField(options)
     // the texture is loaded.
     else
     {
-        texture.once("update", configureImage);
+        texture.source.once("update", configureImage);
     }
-    return box;
+    fieldContainer.addChild(box);
+    return fieldContainer;
 }
 
 async function createTextureFromDataUrl(url) {
@@ -321,6 +318,7 @@ async function createPictureField(options, createOpt)
     } else {
         texture = PIXI.Texture.WHITE;
     }
+    const fieldContainer = new PIXI.Container();
     const sprite = new PIXI.Sprite(texture);
 
     const box = new PIXI.Graphics();
@@ -338,7 +336,7 @@ async function createPictureField(options, createOpt)
                 // its too big.
                 const scale = yscale < xscale ? yscale : xscale;
                 if (scale < 1)
-                    sprite.scale = new PIXI.Point(scale, scale);
+                    fieldContainer.scale = new PIXI.Point(scale, scale);
             }
         }
         else
@@ -348,22 +346,20 @@ async function createPictureField(options, createOpt)
         }
         options.width = sprite.width;
         options.height = sprite.height;
+        box.rect(0, 0, options.width, options.height).fill({color: 0x000000, alpha: 0});
         setFieldBorder(box, options.border);
-        box.beginFill(0, 0);
-        box.drawRect(0, 0, options.width, options.height);
-        box.endFill();
-        box.addChild(sprite);
+        fieldContainer.addChild(sprite);
 
-        box.position.set(options.x, options.y);
-        box.options = options;
+        fieldContainer.position.set(options.x, options.y);
+        fieldContainer.options = options;
 
         if (options.rotation > 0)
         {
-            box.angle = options.rotation;
+            fieldContainer.angle = options.rotation;
         }
     };
     // Image is ready, apply options etc now.
-    if (texture.baseTexture.valid)
+    if (texture.width > 0 && texture.height > 0)
     {
         configureImage();
     }
@@ -371,52 +367,53 @@ async function createPictureField(options, createOpt)
     // the texture is loaded.
     else
     {
-        texture.once("update", configureImage);
+        texture.source.once("update", configureImage);
     }
-    return box;
+    fieldContainer.addChild(box);
+    return fieldContainer;
 }
 
 function createRectangleShapeField(options)
 {
     options.type = 'rectangle';
+    const fieldContainer = new PIXI.Container();
     const rectangle = new PIXI.Graphics();
-    rectangle.options = options;
-    setFieldBorder(rectangle, options.border);
+    fieldContainer.options = options;
     let alpha = 1;
     if (options.color === -1) {
         alpha = 0;
     }
-    rectangle.beginFill(hexColorToSignedNumber(options.color), alpha);
-    rectangle.drawRect(0, 0, options.width, options.height);
-    rectangle.endFill();
-    rectangle.position.set(options.x, options.y);
+    rectangle.rect(0, 0, options.width, options.height).fill({color: hexColorToSignedNumber(options.color), alpha: alpha});
+    setFieldBorder(rectangle, options.border);
+    fieldContainer.position.set(options.x, options.y);
     if (options.rotation > 0)
     {
-        rectangle.angle = options.rotation;
+        fieldContainer.angle = options.rotation;
     }
-    return rectangle;
+    fieldContainer.addChild(rectangle);
+    return fieldContainer;
 }
 
 function createCircleShapeField(options)
 {
     options.type = 'circle';
+    const fieldContainer = new PIXI.Container();
     const circle = new PIXI.Graphics();
-    circle.options = options;
-    setFieldBorder(circle, options.border);
+    fieldContainer.options = options;
     let alpha = 1;
     if (options.color === -1) {
         alpha = 0;
     }
-    circle.beginFill(hexColorToSignedNumber(options.color), alpha);
-    circle.drawEllipse((options.width / 2), (options.height / 2), options.width / 2, options.height / 2);
-    circle.endFill();
-    circle.x = options.x;
-    circle.y = options.y;
+    circle.ellipse((options.width / 2), (options.height / 2), options.width / 2, options.height / 2).fill({color: hexColorToSignedNumber(options.color), alpha: alpha});
+    setFieldBorder(circle, options.border);
+    fieldContainer.x = options.x;
+    fieldContainer.y = options.y;
     if (options.rotation > 0)
     {
-        circle.angle = options.rotation;
+        fieldContainer.angle = options.rotation;
     }
-    return circle;
+    fieldContainer.addChild(circle);
+    return fieldContainer;
 }
 
 export {

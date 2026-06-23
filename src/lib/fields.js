@@ -31,7 +31,7 @@ class Fields {
     addFieldToCard(field) {
         if (field !== null)
         {
-            field.interactive = this.cardside.options.interaction;
+            field.eventMode = this.cardside.options.interaction ? 'static' : 'none';
             if (this.cardside.options.interaction) {
                 field
                     .on('mousedown', (event) =>
@@ -452,26 +452,29 @@ class Fields {
                 stickx = true;
             }
 
-            let exactmatch = (x === field.position.x || x === field.position.x + field.options.width);
-            let line = new PIXI.Graphics();
-            line.position.set(x, 0);
-            line.lineStyle(exactmatch ? 2 : 1, 0x2626c9)
-                .moveTo(0, 0)
-                .lineTo(0, this.cardside.graphics.card.height);
+            const exactmatch = (x === field.position.x || x === field.position.x + field.options.width);
+            const lineContainer = new PIXI.Container();
+            lineContainer.eventMode = 'none';
+            lineContainer.position.set(x, 0);
+            const line = new PIXI.Graphics();
+            line.moveTo(0, 0)
+                .lineTo(0, this.cardside.graphics.card.height)
+                .stroke({width: exactmatch ? 2 : 1, color: 0x2626c9});
             if (exactmatch)
             {
-                const text = new PIXI.Text('X: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, x) + this.cardside.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
-                const label = new PIXI.Graphics();
-                label.lineStyle(1, 0x000000, 1);
-                label.beginFill(0xffd400, 1);
-                label.drawRect(0, 0, text.width, text.height);
-                label.endFill();
+                const label = new PIXI.Container();
+                label.eventMode = 'none';
+                const text = new PIXI.Text({text: 'X: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, x) + this.cardside.data.grid.unit, style: {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000}});
+                const bg = new PIXI.Graphics();
+                bg.rect(0, 0, text.width, text.height).fill(0xffd400).stroke({width: 1, color: 0x000000});
+                label.addChild(bg);
                 label.addChild(text);
                 label.position.set(0, (field.position.y - 25) > 0 ? (field.position.y - 25) : (field.position.y + field.options.height + 25));
-                line.addChild(label);
+                lineContainer.addChild(label);
             }
-            this.cardside.graphics.card.addChild(line);
-            this.cardside.graphics.highlights.push(line);
+            lineContainer.addChild(line);
+            this.cardside.graphics.card.addChild(lineContainer);
+            this.cardside.graphics.highlights.push(lineContainer);
         }
         });
 
@@ -489,26 +492,29 @@ class Fields {
                     sticky = true;
                 }
 
-                let exactmatch = (y === field.position.y || y === field.position.y + field.options.height);
-                let line = new PIXI.Graphics();
-                line.position.set(0, y);
-                line.lineStyle(exactmatch ? 2 : 1, 0x2626c9)
-                    .moveTo(0, 0)
-                    .lineTo(this.cardside.graphics.card.width, 0);
+                const exactmatch = (y === field.position.y || y === field.position.y + field.options.height);
+                const lineContainer = new PIXI.Container();
+                lineContainer.eventMode = 'none';
+                lineContainer.position.set(0, y);
+                const line = new PIXI.Graphics();
+                line.moveTo(0, 0)
+                    .lineTo(this.cardside.graphics.card.width, 0)
+                    .stroke({width: exactmatch ? 2 : 1, color: 0x2626c9});
                 if (exactmatch)
                 {
-                    const text = new PIXI.Text('Y: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, y) + this.cardside.data.grid.unit, {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000});
-                    const label = new PIXI.Graphics();
-                    label.lineStyle(1, 0x000000, 1);
-                    label.beginFill(0xffd400, 1);
-                    label.drawRect(0, 0, text.width, text.height);
-                    label.endFill();
+                    const label = new PIXI.Container();
+                    label.eventMode = 'none';
+                    const text = new PIXI.Text({text: 'Y: ' + this.pixelToUnit(this.cardside.data.card.width_unit, this.cardside.data.card.width, y) + this.cardside.data.grid.unit, style: {fontFamily: 'Arial', fontSize: '10pt', fill: 0x000000}});
+                    const bg = new PIXI.Graphics();
+                    bg.rect(0, 0, text.width, text.height).fill(0xffd400).stroke({width: 1, color: 0x000000});
+                    label.addChild(bg);
                     label.addChild(text);
                     label.position.set((field.position.x - 40) > 0 ? (field.position.x - 40) : (field.position.x + field.options.width + 25), 0);
-                    line.addChild(label);
+                    lineContainer.addChild(label);
                 }
-                this.cardside.graphics.card.addChild(line);
-                this.cardside.graphics.highlights.push(line);
+                lineContainer.addChild(line);
+                this.cardside.graphics.card.addChild(lineContainer);
+                this.cardside.graphics.highlights.push(lineContainer);
             }
         });
     }
@@ -693,16 +699,16 @@ class Fields {
     createSelectedSprite(parent) {
         const boxwidth = (parent.width + 1) / parent.scale.x;
         const boxheight = parent.height / parent.scale.y;
-        const selectgraph = new PIXI.Graphics();
-        selectgraph.lineStyle(1, 0x000000, 1);
-        selectgraph.drawRect(-1, -1, boxwidth, boxheight);
-        selectgraph.lineStyle(1, 0xffffff, 1);
-        selectgraph.drawRect(-2, -2, (parent.width + 3) / parent.scale.x , (parent.height + 2) / parent.scale.y);
+        const selectgraph = new PIXI.Container();
+        const bg = new PIXI.Graphics();
+        bg.rect(-1, -1, boxwidth, boxheight).stroke({width: 1, color: 0x000000});
+        bg.rect(-2, -2, (parent.width + 3) / parent.scale.x , (parent.height + 2) / parent.scale.y).stroke({width: 1, color: 0xffffff});
+        selectgraph.addChild(bg);
+        selectgraph.eventMode = 'static';
 
         if (this.cardside.options.onSelectedSpriteCreated) {
             this.cardside.options.onSelectedSpriteCreated(this.cardside, selectgraph, boxwidth, boxheight, parent.scale);
         }
-        
         parent.box = selectgraph;
         return selectgraph;
     }

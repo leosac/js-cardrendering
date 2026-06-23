@@ -21,9 +21,8 @@ class Grid {
 
             for (var i = 0; i < this.cardside.data.grid.rows; i++) {
                 for (var j = 0; j < this.cardside.data.grid.columns; j++) {
-                    let cell = new PIXI.Graphics();
-                    cell.lineStyle(1, 0xaeaeae, 1);
-                    cell.drawRect(0, 0, width, height);
+                    const cell = new PIXI.Graphics();
+                    cell.rect(0, 0, width, height).stroke({ width: 1, color: 0xaeaeae });
                     cell.x = j * width;
                     cell.y = i * height;
                     this.cardside.graphics.grid.addChild(cell);
