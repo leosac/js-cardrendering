@@ -704,7 +704,7 @@ class Fields {
         bg.rect(-1, -1, boxwidth, boxheight).stroke({width: 1, color: 0x000000});
         bg.rect(-2, -2, (parent.width + 3) / parent.scale.x , (parent.height + 2) / parent.scale.y).stroke({width: 1, color: 0xffffff});
         selectgraph.addChild(bg);
-        selectgraph.eventMode = 'static';
+        selectgraph.eventMode = 'passive';
 
         if (this.cardside.options.onSelectedSpriteCreated) {
             this.cardside.options.onSelectedSpriteCreated(this.cardside, selectgraph, boxwidth, boxheight, parent.scale);

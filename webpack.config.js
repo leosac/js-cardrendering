@@ -10,8 +10,7 @@ const nodeConfig = {
     filename: 'cardrendering.node.js',
     library: 'cardrendering',
     libraryTarget: 'umd',
-    path: path.resolve(__dirname, 'dist'),
-    clean: true
+    path: path.resolve(__dirname, 'dist')
   },
   plugins: [
     new ESLintPlugin()
@@ -47,7 +46,8 @@ const browserConfig = {
     })
   ],
   externals: {
-    '@pixi/node': '@pixi/node'
+    '@pixi/node': '@pixi/node',
+    'pixi.js': 'pixi.js'
   },
   optimization: {
     minimize: false
