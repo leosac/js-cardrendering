@@ -1,6 +1,6 @@
 {
   "name": "@leosac/cardrendering",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Card Rendering engine for CR-80 cards and more",
   "main": "dist/cardrendering.node.js",
   "browser": "dist/cardrendering.js",
@@ -33,6 +33,11 @@
   "peerDependencies": {
     "@pixi/node": "^8.0.0",
     "pixi.js": "^8.19.0"
+  },
+  "peerDependenciesMeta": {
+    "@pixi/node": {
+      "optional": true
+    }
   },
   "scripts": {
     "build": "webpack",
