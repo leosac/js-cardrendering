@@ -115,8 +115,8 @@ function createTextField(options, scale = 1)
     fieldContainer.position.set(options.x, options.y);
     fieldContainer.options = options;
 
-    if (options.rotation > 0) {
-        fieldContainer.angle = options.rotation;
+    if (options.rotation != 0) {
+        fieldContainer.rotation = options.rotation;
     }
     fieldContainer.addChild(text);
     return fieldContainer;
@@ -154,8 +154,8 @@ async function createBwipSprint(options, bwopts, dpi = 300) {
         sprite.width = width;
         options.height = height;
         options.width = width;
-        if (options.rotation > 0) {
-            sprite.angle = options.rotation;
+        if (options.rotation != 0) {
+            sprite.rotation = options.rotation;
         }
         return sprite;
     } catch (e) {
@@ -270,9 +270,9 @@ function createFingerprintField(options)
     {
         sprite.width = options.width;
         sprite.height = options.height;
-        if (options.rotation > 0)
+        if (options.rotation != 0)
         {
-            sprite.angle = options.rotation;
+            sprite.rotation = options.rotation;
         }
         box.rect(0, 0, options.width, options.height).fill({color: 0x000000, alpha: 0});
         setFieldBorder(box, options.border);
@@ -353,9 +353,9 @@ async function createPictureField(options, createOpt)
         fieldContainer.position.set(options.x, options.y);
         fieldContainer.options = options;
 
-        if (options.rotation > 0)
+        if (options.rotation != 0)
         {
-            fieldContainer.angle = options.rotation;
+            fieldContainer.rotation = options.rotation;
         }
     };
     // Image is ready, apply options etc now.
@@ -386,9 +386,9 @@ function createRectangleShapeField(options)
     rectangle.rect(0, 0, options.width, options.height).fill({color: hexColorToSignedNumber(options.color), alpha: alpha});
     setFieldBorder(rectangle, options.border);
     fieldContainer.position.set(options.x, options.y);
-    if (options.rotation > 0)
+    if (options.rotation != 0)
     {
-        fieldContainer.angle = options.rotation;
+        fieldContainer.rotation = options.rotation;
     }
     fieldContainer.addChild(rectangle);
     return fieldContainer;
@@ -408,9 +408,9 @@ function createCircleShapeField(options)
     setFieldBorder(circle, options.border);
     fieldContainer.x = options.x;
     fieldContainer.y = options.y;
-    if (options.rotation > 0)
+    if (options.rotation != 0)
     {
-        fieldContainer.angle = options.rotation;
+        fieldContainer.rotation = options.rotation;
     }
     fieldContainer.addChild(circle);
     return fieldContainer;
